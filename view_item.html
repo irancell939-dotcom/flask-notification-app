@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ notification.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    {% if notification.is_important %}
+                    <span class="badge bg-danger">مهم</span>
+                    {% endif %}
+                    {{ notification.title }}
+                </h4>
+                <a href="{{ url_for('index') }}" class="btn btn-sm btn-secondary">بازگشت</a>
+            </div>
+            <div class="card-body">
+                <p class="lead">{{ notification.description }}</p>
+                <hr>
+                <div class="row text-muted small">
+                    <div class="col-md-6">
+                        <strong>تاریخ درج:</strong>
+                        <span class="local-time" data-iso="{{ notification.get_iso_created() }}">
+                            {{ notification.get_iso_created() }}
+                        </span>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <strong>تاریخ انقضا:</strong> {{ notification.get_shamsi_expiry() }}
+                    </div>
+                </div>
+
+                {% if current_user.is_admin %}
+                <hr>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('edit_item', item_id=notification.id) }}" class="btn btn-sm btn-primary">ویرایش</a>
+                    <a href="{{ url_for('toggle_important', item_id=notification.id) }}" class="btn btn-sm btn-warning">
+                        {% if notification.is_important %}خارج از حالت مهم{% else %}علامت‌گذاری به عنوان مهم{% endif %}
+                    </a>
+                    <a href="{{ url_for('archive_item', item_id=notification.id) }}" class="btn btn-sm btn-secondary">بایگانی</a>
+                    <a href="{{ url_for('delete_item', item_id=notification.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('آیا از حذف اطمینان دارید؟')">حذف</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- کادر نظرات - پس‌زمینه سبز روشن -->
+        <div class="card shadow-sm" style="background-color: #e8f5e9; border: 1px solid #a5d6a7;">
+            <div class="card-header bg-success text-white">
+                <strong><i class="fas fa-comments"></i> نظرات ({{ notification.comments|length }})</strong>
+            </div>
+            <div class="card-body">
+                {% for comment in notification.comments|sort(attribute='created_at', reverse=true) %}
+                <div class="border-bottom pb-3 mb-3">
+                    <div class="d-flex justify-content-between">
+                        <strong class="text-primary">
+                            {{ comment.author.full_name if comment.author.full_name else comment.author.username }}
+                            {% if comment.author.is_admin %}
+                            <span class="badge bg-warning text-dark ms-1">مدیر</span>
+                            {% endif %}
+                        </strong>
+                        <small class="text-muted local-time" data-iso="{{ comment.get_iso_created() }}">
+                            {{ comment.get_iso_created() }}
+                        </small>
+                    </div>
+                    <p class="mt-2 mb-1">{{ comment.text }}</p>
+                    {% if current_user.is_admin or comment.user_id == current_user.id %}
+                    <a href="{{ url_for('delete_comment', comment_id=comment.id) }}"
+                       class="btn btn-sm btn-outline-danger"
+                       onclick="return confirm('حذف نظر؟')">حذف</a>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center mb-3">هنوز نظری ثبت نشده است.</p>
+                {% endfor %}
+
+                {% if current_user.is_authenticated %}
+                <hr>
+                <form method="POST" action="{{ url_for('add_comment', item_id=notification.id) }}">
+                    <div class="mb-2">
+                        <textarea name="text" class="form-control" rows="3" placeholder="نظر خود را بنویسید..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-sm">ارسال نظر</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

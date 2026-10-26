@@ -1,0 +1,42 @@
+<div class="row">
+    {% for vehicle in vehicles %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <a href="{{ url_for('vehicle_detail', id=vehicle.id) }}" class="text-decoration-none text-dark">
+            <div class="card h-100 shadow-sm position-relative {% if vehicle.is_expired() %}border-danger border-2{% endif %}">
+                {% if vehicle.violations_count > 0 %}
+                <span class="badge bg-danger violation-badge">
+                    <i class="fas fa-exclamation-triangle"></i> {{ vehicle.violations_count }} تخلف
+                </span>
+                {% endif %}
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">{{ vehicle.driver_name }}</h5>
+                    <div class="license-plate mx-auto mb-3">
+                        <span class="blue-strip">IR</span>
+                        <span>{{ vehicle.plate_4 }}</span>
+                        <span>{{ vehicle.plate_3 }}</span>
+                        <span>{{ vehicle.plate_2 }}</span>
+                        <span>{{ vehicle.plate_1 }}</span>
+                    </div>
+                    {% if vehicle.entrance_gate %}
+                    <p class="text-info small mb-1">
+                        <i class="fas fa-door-open"></i> {{ vehicle.entrance_gate }}
+                    </p>
+                    {% endif %}
+                    <p class="text-muted small mb-0">
+                        اعتبار: {{ vehicle.get_shamsi_validity() }}
+                        {% if vehicle.is_expired() %}
+                        <br><span class="badge bg-danger">منقضی شده</span>
+                        {% else %}
+                        <br><span class="badge bg-success">مجاز</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">هیچ خودرویی یافت نشد.</div>
+    </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}ویرایش اطلاعیه{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0"><i class="fas fa-edit"></i> ویرایش اطلاعیه</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">عنوان اطلاعیه</label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ notification.title }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">توضیحات</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required>{{ notification.description }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expiry_date" class="form-label">تاریخ انقضا (شمسی)</label>
+                            <input type="text" class="form-control" id="expiry_date" name="expiry_date" value="{{ notification.get_shamsi_expiry() }}" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is_important" name="is_important" {% if notification.is_important %}checked{% endif %}>
+                            <label class="form-check-label" for="is_important">علامت‌گذاری به عنوان مهم</label>
+                        </div>
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">انصراف</a>
+                            <button type="submit" class="btn btn-primary">بروزرسانی</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}تردد های مجاز{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">لیست تردد های مجاز</h2>
+    
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <p class="text-center text-muted">این صفحه برای نمایش لیست تردد های مجاز طراحی شده است.</p>
+        </div>
+    </div>
+    
+    <div class="text-center mt-3">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">بازگشت به صفحه اصلی</a>
+    </div>
+</div>
+{% endblock %}
