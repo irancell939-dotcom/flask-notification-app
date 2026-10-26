@@ -6,7 +6,6 @@ import jdatetime
 
 db = SQLAlchemy()
 
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -26,12 +25,6 @@ class User(UserMixin, db.Model):
     @property
     def full_name(self):
         return f"{self.first_name or ''} {self.last_name or ''}".strip() or self.username
-
-    def get_iso_created(self):
-        """برگرداندن تاریخ به فرمت ISO برای تبدیل در JavaScript"""
-        if self.created_at:
-            return self.created_at.isoformat() + 'Z'
-        return ''
 
 
 class Notification(db.Model):
