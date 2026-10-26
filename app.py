@@ -7,7 +7,7 @@ import jdatetime
 import os
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-   app = Flask(__name__, template_folder='templates', instance_relative_config=False)
+app = Flask(__name__, template_folder='templates', instance_relative_config=False)
 app.config.from_object(Config)
 
 app.instance_path = os.path.join(BASE_DIR, 'instance')
