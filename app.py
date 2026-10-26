@@ -30,7 +30,7 @@ def inject_now():
     return {'datetime': datetime}
 
 @app.route('/')
-@login_required
+   # @login_required   <-- این خط را غیرفعال کردیم
 def index():
     notifications = Notification.query.filter(
         Notification.is_archived == False,
