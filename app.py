@@ -42,7 +42,7 @@ def inject_now():
     return {'datetime': datetime}
 
 @app.route('/')
-# @login_required 
+@login_required 
 def index():
     notifications = Notification.query.filter(
         Notification.is_archived == False,
