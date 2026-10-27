@@ -42,7 +42,7 @@ def inject_now():
     return {'datetime': datetime}
 
 @app.route('/')
-# @login_required  # این خط را کامنت کردیم تا بدون لاگین وارد شود
+@login_required 
 def index():
     notifications = Notification.query.filter(
         Notification.is_archived == False,
