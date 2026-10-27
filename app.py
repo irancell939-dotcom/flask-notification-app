@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Notification, Comment, Vehicle, Violation
 from config import Config
-from datetime import datetime
+from datetime import datetime, date, timedelta
 import jdatetime
 import os
 
@@ -21,17 +21,40 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# ساخت خودکار جدول‌ها در دیتابیس اگر وجود نداشته باشند
+# ==========================================================
+# بخش ساخت خودکار داده‌های پیش‌فرض در دیتابیس
+# ==========================================================
 with app.app_context():
     db.create_all()
-    # ایجاد کاربر مدیر پیش‌فرض اگر وجود نداشته باشد
+    
+    # ۱. ساخت کاربر مدیر پیش‌فرض اگر وجود نداشته باشد
     if not User.query.filter_by(username='1').first():
         admin = User(username='1', first_name='مدیر', last_name='سیستم',
                      is_admin=True, can_add_notification=True)
         admin.set_password('1')
         db.session.add(admin)
         db.session.commit()
-        print("کاربر مدیر پیش‌فرض ایجاد شد: نام کاربری = 1، رمز عبور = 1")
+        print("✅ کاربر مدیر پیش‌فرض ایجاد شد: نام کاربری = 1، رمز عبور = 1")
+
+    # ۲. ساخت یک اطلاعیه پیش‌فرض اگر هیچ اطلاعیه‌ای وجود نداشته باشد
+    if not Notification.query.first():
+        admin_user = User.query.filter_by(username='1').first()
+        # تاریخ انقضا را ۳۰ روز در آینده تنظیم می‌کنیم
+        future_date = date.today() + timedelta(days=30)
+        
+        default_notification = Notification(
+            title="🎉 سیستم با موفقیت راه‌اندازی شد!",
+            description="این یک اطلاعیه پیش‌فرض است تا مطمئن شویم اتصال به دیتابیس و نمایش اطلاعات به درستی کار می‌کند. شما می‌توانید پس از ورود به سیستم، این اطلاعیه را ویرایش یا حذف کنید.",
+            expiry_date=future_date,
+            created_by=admin_user.id if admin_user else None,
+            is_approved=True,      # تایید شده تا در صفحه اصلی نمایش داده شود
+            is_important=True,     # مهم باشد تا با برچسب قرمز دیده شود
+            is_archived=False
+        )
+        db.session.add(default_notification)
+        db.session.commit()
+        print("✅ اطلاعیه پیش‌فرض با موفقیت ایجاد شد.")
+# ==========================================================
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -42,12 +65,14 @@ def inject_now():
     return {'datetime': datetime}
 
 @app.route('/')
-@login_required
+# @login_required  # همچنان غیرفعال است تا بتوانید بدون لاگین صفحه اصلی و منو را ببینید
 def index():
     notifications = Notification.query.filter(
         Notification.is_archived == False,
         Notification.is_approved == True
     ).order_by(Notification.created_at.desc()).all()
+    
+    # فقط اطلاعیه‌هایی که منقضی نشده‌اند را نشان بده
     active_notifications = [n for n in notifications if not n.is_expired()]
     return render_template('index.html', notifications=active_notifications)
 
@@ -75,7 +100,7 @@ def approve_item(item_id):
     return redirect(url_for('pending_notifications'))
 
 @app.route('/archive')
-@login_required
+# @login_required # برای تست، این را هم موقتاً باز گذاشتم
 def archive():
     notifications = Notification.query.filter(
         (Notification.is_archived == True) |
@@ -123,7 +148,7 @@ def add_item():
     return render_template('add_item.html')
 
 @app.route('/view/<int:item_id>')
-@login_required
+# @login_required
 def view_item(item_id):
     notification = Notification.query.get_or_404(item_id)
     return render_template('view_item.html', notification=notification)
@@ -220,7 +245,7 @@ def delete_comment(comment_id):
     return redirect(url_for('view_item', item_id=comment.notification_id))
 
 @app.route('/vehicles')
-@login_required
+# @login_required
 def vehicles():
     plate_1 = request.args.get('plate_1', '').strip()
     plate_2 = request.args.get('plate_2', '').strip()
@@ -478,21 +503,10 @@ def manage_users():
     users = User.query.all()
     return render_template('manage_users.html', users=users)
 
-# این بخش فقط برای اجرای لوکال است
 if __name__ == '__main__':
     print("=" * 50)
     print("برنامه با موفقیت اجرا شد!")
     print("آدرس: http://localhost:5000")
     print("نام کاربری مدیر: 1 | رمز عبور: 1")
     print("=" * 50)
-    
-    try:
-        import webbrowser
-        import threading
-        def open_browser():
-            webbrowser.open_new('http://localhost:5000')
-        threading.Timer(1.5, open_browser).start()
-    except Exception:
-        pass
-    
     app.run(debug=True, host='0.0.0.0', port=5000)
