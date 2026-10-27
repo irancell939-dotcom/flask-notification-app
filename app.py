@@ -21,6 +21,18 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+# ساخت خودکار جدول‌ها در دیتابیس اگر وجود نداشته باشند
+with app.app_context():
+    db.create_all()
+    # ایجاد کاربر مدیر پیش‌فرض اگر وجود نداشته باشد
+    if not User.query.filter_by(username='1').first():
+        admin = User(username='1', first_name='مدیر', last_name='سیستم',
+                     is_admin=True, can_add_notification=True)
+        admin.set_password('1')
+        db.session.add(admin)
+        db.session.commit()
+        print("کاربر مدیر پیش‌فرض ایجاد شد: نام کاربری = 1، رمز عبور = 1")
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -30,7 +42,7 @@ def inject_now():
     return {'datetime': datetime}
 
 @app.route('/')
-   # @login_required   <-- این خط را غیرفعال کردیم
+# @login_required  # این خط را کامنت کردیم تا بدون لاگین وارد شود
 def index():
     notifications = Notification.query.filter(
         Notification.is_archived == False,
@@ -466,19 +478,8 @@ def manage_users():
     users = User.query.all()
     return render_template('manage_users.html', users=users)
 
-def init_db():
-    with app.app_context():
-        db.create_all()
-        if not User.query.filter_by(username='1').first():
-            admin = User(username='1', first_name='مدیر', last_name='سیستم',
-                         is_admin=True, can_add_notification=True)
-            admin.set_password('1')
-            db.session.add(admin)
-            db.session.commit()
-            print("کاربر مدیر پیش‌فرض ایجاد شد: نام کاربری = 1، رمز عبور = 1")
-
+# این بخش فقط برای اجرای لوکال است
 if __name__ == '__main__':
-    init_db()
     print("=" * 50)
     print("برنامه با موفقیت اجرا شد!")
     print("آدرس: http://localhost:5000")
