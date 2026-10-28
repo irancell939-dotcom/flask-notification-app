@@ -23,7 +23,18 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <!-- منوی عمومی - برای همه قابل مشاهده -->
+                    {% if current_user.is_authenticated %}
+                    <!-- منوی کاربر لاگین کرده -->
+                    <li class="nav-item">
+                        <span class="nav-link text-warning">
+                            <i class="fas fa-user"></i> {{ current_user.full_name }}
+                            {% if current_user.is_admin %}
+                            <span class="badge bg-warning text-dark">مدیر</span>
+                            {% else %}
+                            <span class="badge bg-secondary">کاربر</span>
+                            {% endif %}
+                        </span>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('index') }}">
                             <i class="fas fa-home"></i> صفحه اصلی
@@ -38,19 +49,6 @@
                         <a class="nav-link" href="{{ url_for('archive') }}">
                             <i class="fas fa-archive"></i> بایگانی
                         </a>
-                    </li>
-
-                    {% if current_user.is_authenticated %}
-                    <!-- منوی کاربر لاگین کرده -->
-                    <li class="nav-item">
-                        <span class="nav-link text-warning">
-                            <i class="fas fa-user"></i> {{ current_user.full_name }}
-                            {% if current_user.is_admin %}
-                            <span class="badge bg-warning text-dark">مدیر</span>
-                            {% else %}
-                            <span class="badge bg-secondary">کاربر</span>
-                            {% endif %}
-                        </span>
                     </li>
 
                     {% if current_user.is_admin %}
@@ -85,13 +83,6 @@
                     <li class="nav-item">
                         <a class="nav-link text-danger" href="{{ url_for('logout') }}">
                             <i class="fas fa-sign-out-alt"></i> خروج
-                        </a>
-                    </li>
-                    {% else %}
-                    <!-- منوی کاربر ناشناس - فقط دکمه ورود -->
-                    <li class="nav-item">
-                        <a class="nav-link text-success" href="{{ url_for('login') }}">
-                            <i class="fas fa-sign-in-alt"></i> ورود به سیستم
                         </a>
                     </li>
                     {% endif %}
