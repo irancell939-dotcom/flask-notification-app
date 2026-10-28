@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}پشتیبان‌گیری از دیتابیس{% endblock %}
+
+{% block content %}
+<div dir="rtl" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">مدیریت پشتیبان‌گیری</h2>
+    
+    <div style="background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <strong>توجه امنیتی:</strong> فایل‌های پشتیبان حاوی اطلاعات حساس (شماره تماس، رمزهای عبور هش‌شده و...) هستند. 
+        پس از دانلود، آن‌ها را در مکانی امن ذخیره کنید و هرگز در GitHub یا فضای عمومی آپلود نکنید.
+    </div>
+
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+        <h3>📦 پشتیبان کامل از کل دیتابیس (پیشنهادی)</h3>
+        <p>این فایل شامل تمام جداول و داده‌ها با فرمت JSON است و برای بازیابی کامل سیستم در آینده مناسب است.</p>
+        <form method="POST" action="{{ url_for('backup_download_json') }}" style="margin-top: 15px;">
+            <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                دانلود فایل پشتیبان کامل (JSON)
+            </button>
+        </form>
+    </div>
+
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+        <h3>📊 خروجی جدول‌به‌جدول (CSV)</h3>
+        <p>برای مشاهده داده‌های هر جدول به صورت جداگانه در نرم‌افزار اکسل (Excel):</p>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 15px;">
+            {% for table in tables %}
+                <form method="POST" action="{{ url_for('backup_download_csv', table_name=table) }}">
+                    <button type="submit" style="width: 100%; background-color: #17a2b8; color: white; padding: 8px; border: none; border-radius: 4px; cursor: pointer;">
+                        دانلود {{ table }}
+                    </button>
+                </form>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="{{ url_for('index') }}" style="color: #6c757d; text-decoration: none;">← بازگشت به صفحه اصلی</a>
+    </div>
+</div>
+{% endblock %}
