@@ -76,9 +76,9 @@ class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
     # فیلدهای جدید
-    national_id = db.Column(db.String(10), unique=True, nullable=True)  # شماره ملی
-    dormitory_status = db.Column(db.String(50), nullable=True)  # وضعیت خوابگاه
-    photo_path = db.Column(db.String(200), nullable=True)  # مسیر عکس
+    national_id = db.Column(db.String(10), unique=True, nullable=True)
+    dormitory_status = db.Column(db.String(50), nullable=True)
+    photo_path = db.Column(db.String(200), nullable=True)
     
     plate_1 = db.Column(db.String(2), nullable=False)
     plate_2 = db.Column(db.String(1), nullable=False)
