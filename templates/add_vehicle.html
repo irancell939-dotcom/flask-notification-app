@@ -4,176 +4,224 @@
 {% block content %}
 <h1 class="page-title">افزودن خودروی مجاز</h1>
 
-<div class="notification-card">
-    <form method="POST" action="{{ url_for('add_vehicle') }}">
-        <!-- بخش پلاک -->
-        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px;">
-             اطلاعات پلاک
+<form method="POST" action="{{ url_for('add_vehicle') }}" enctype="multipart/form-data">
+    
+    <!-- بخش شماره ملی (ابتدا) -->
+    <div class="notification-card" style="margin-bottom: 15px; border-right: 4px solid #9c27b0;">
+        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #9c27b0; padding-bottom: 8px; font-size: 16px;">
+            🆔 اطلاعات هویتی
         </h3>
-        
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
             <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    دو رقم (چپ) <span style="color: #e74c3c;">*</span>
-                </label>
-                <input type="text" name="plate_1" required maxlength="2"
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; text-align: center; font-family: Tahoma;">
-            </div>
-            <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    حرف فارسی <span style="color: #e74c3c;">*</span>
-                </label>
-                <input type="text" name="plate_2" required maxlength="1"
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; text-align: center; font-family: Tahoma;">
-            </div>
-            <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    سه رقم <span style="color: #e74c3c;">*</span>
-                </label>
-                <input type="text" name="plate_3" required maxlength="3"
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; text-align: center; font-family: Tahoma;">
-            </div>
-            <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    کد شهرستان <span style="color: #e74c3c;">*</span>
-                </label>
-                <input type="text" name="plate_4" required maxlength="2"
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; text-align: center; font-family: Tahoma;">
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">شماره ملی *</label>
+                <input type="text" name="national_id" required maxlength="10" pattern="[0-9]{10}" placeholder="1234567890"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#9c27b0'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+                <p style="font-size: 11px; color: #888; margin-top: 4px;">نام عکس با این شماره ذخیره می‌شود</p>
             </div>
         </div>
+    </div>
 
-        <!-- اطلاعات راننده و خودرو -->
-        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #28a745; padding-bottom: 8px;">
-            👤 اطلاعات راننده و خودرو
+    <!-- بخش اطلاعات پلاک -->
+    <div class="notification-card" style="margin-bottom: 15px;">
+        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px; font-size: 16px;">
+            🚗 اطلاعات پلاک
         </h3>
-
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                نام راننده <span style="color: #e74c3c;">*</span>
-            </label>
-            <input type="text" name="driver_name" required
-                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma;">
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
             <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    نوع خودرو <span style="color: #e74c3c;">*</span>
-                </label>
-                <input type="text" name="vehicle_type" required
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">دو رقم (چپ)</label>
+                <input type="text" name="plate_1" required maxlength="2" placeholder="12"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; text-align: center; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
             </div>
             <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    رنگ خودرو <span style="color: #e74c3c;">*</span>
-                </label>
-                <input type="text" name="color" required
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">حرف</label>
+                <input type="text" name="plate_2" required maxlength="1" placeholder="ب"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; text-align: center; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">سه رقم</label>
+                <input type="text" name="plate_3" required maxlength="3" placeholder="123"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; text-align: center; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">کد شهرستان</label>
+                <input type="text" name="plate_4" required maxlength="2" placeholder="11"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; text-align: center; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
             </div>
         </div>
+    </div>
 
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                شماره تلفن <span style="color: #e74c3c;">*</span>
-            </label>
-            <input type="tel" name="phone" required
-                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; direction: ltr; text-align: right;">
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+    <!-- بخش اطلاعات راننده -->
+    <div class="notification-card" style="margin-bottom: 15px;">
+        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #28a745; padding-bottom: 8px; font-size: 16px;">
+             اطلاعات راننده
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
             <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    سمت
-                </label>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">نام راننده *</label>
+                <input type="text" name="driver_name" required
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">شماره تلفن *</label>
+                <input type="text" name="phone" required
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">سمت</label>
                 <input type="text" name="position"
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
             </div>
             <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    پارکینگ
-                </label>
-                <input type="text" name="parking"
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
-            </div>
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
-            <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    شماره دانشجویی
-                </label>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">شماره دانشجویی</label>
                 <input type="text" name="student_id"
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
             </div>
             <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    رشته تحصیلی
-                </label>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">رشته تحصیلی</label>
                 <input type="text" name="major"
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
             </div>
         </div>
+    </div>
 
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                تاریخ اعتبار (شمسی) <span style="color: #e74c3c;">*</span>
-            </label>
-            <input type="text" name="validity_date" required
-                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; direction: ltr; text-align: right;"
-                   placeholder="1405/12/29">
-            <p style="font-size: 12px; color: #888; margin-top: 6px;">
-                فرمت تاریخ: سال/ماه/روز (مثال: 1405/12/29)
-            </p>
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                درب ورود
-            </label>
-            <input type="text" name="entrance_gate"
-                   style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
-        </div>
-
-        <!-- فیلدهای مدیریتی -->
-        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #f39c12; padding-bottom: 8px;">
-            🔧 اطلاعات تکمیلی (مدیریتی)
+    <!-- بخش اطلاعات خودرو -->
+    <div class="notification-card" style="margin-bottom: 15px;">
+        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #f39c12; padding-bottom: 8px; font-size: 16px;">
+             اطلاعات خودرو
         </h3>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
             <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    معرف
-                </label>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">نوع خودرو *</label>
+                <input type="text" name="vehicle_type" required placeholder="مثال: پژو 405"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">رنگ خودرو *</label>
+                <input type="text" name="color" required placeholder="مثال: سفید"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">پارکینگ</label>
+                <input type="text" name="parking"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">تاریخ اعتبار (شمسی) *</label>
+                <input type="text" name="validity_date" required placeholder="1405/08/15"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">درب ورود</label>
+                <input type="text" name="entrance_gate"
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+            </div>
+        </div>
+    </div>
+
+    <!-- بخش وضعیت خوابگاه و آپلود عکس (انتها) -->
+    <div class="notification-card" style="margin-bottom: 15px; border-right: 4px solid #e91e63;">
+        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #e91e63; padding-bottom: 8px; font-size: 16px;">
+             وضعیت و عکس
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">وضعیت خوابگاه</label>
+                <select name="dormitory_status"
+                        style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                        onfocus="this.style.borderColor='#e91e63'; this.style.background='white';"
+                        onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+                    <option value="">انتخاب کنید...</option>
+                    <option value="ساکن خوابگاه">ساکن خوابگاه</option>
+                    <option value="غیر ساکن">غیر ساکن</option>
+                    <option value="خوابگاه متاهلی">خوابگاه متاهلی</option>
+                    <option value="سایر">سایر</option>
+                </select>
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">عکس راننده (اختیاری)</label>
+                <input type="file" name="photo" accept="image/*"
+                       style="width: 100%; padding: 10px; border: 2px dashed #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma; background: #fafafa;">
+                <p style="font-size: 11px; color: #888; margin-top: 4px;">نام فایل: شماره ملی.jpg</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- بخش اطلاعات تکمیلی (فقط مدیر) -->
+    {% if current_user.is_admin %}
+    <div class="notification-card" style="margin-bottom: 15px;">
+        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 8px; font-size: 16px;">
+            📋 اطلاعات تکمیلی (مدیر)
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">معرف</label>
                 <input type="text" name="referrer"
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
             </div>
             <div>
-                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                    محل بایگانی
-                </label>
+                <label style="display: block; margin-bottom: 6px; font-size: 13px; color: #666;">محل بایگانی</label>
                 <input type="text" name="archive_location"
-                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+                       style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; background: #fafafa;"
+                       onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                       onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
             </div>
         </div>
+    </div>
+    {% endif %}
 
-        <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
-                توضیحات
-            </label>
-            <textarea name="description" rows="3"
-                      style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma; resize: vertical;"></textarea>
-        </div>
+    <!-- بخش توضیحات -->
+    <div class="notification-card" style="margin-bottom: 15px;">
+        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #6c757d; padding-bottom: 8px; font-size: 16px;">
+            📝 توضیحات
+        </h3>
+        <textarea name="description" rows="4"
+                  style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; resize: vertical; min-height: 100px; background: #fafafa;"
+                  onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                  onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';"></textarea>
+    </div>
 
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <a href="{{ url_for('vehicles') }}" 
-               style="flex: 1; min-width: 120px; background: #6c757d; color: white; padding: 14px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold; font-size: 15px;">
-                انصراف
-            </a>
-            <button type="submit" 
-                    style="flex: 2; min-width: 140px; background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: Tahoma;">
-                ذخیره خودرو
-            </button>
-        </div>
-    </form>
-</div>
+    <!-- دکمه‌ها -->
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="{{ url_for('vehicles') }}" 
+           style="flex: 1; min-width: 120px; background: #6c757d; color: white; padding: 14px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold; font-size: 15px;">
+            انصراف
+        </a>
+        <button type="submit" 
+                style="flex: 2; min-width: 150px; background: #28a745; color: white; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: Tahoma;">
+            ذخیره خودرو
+        </button>
+    </div>
+</form>
 {% endblock %}
