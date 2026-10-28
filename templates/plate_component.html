@@ -1,0 +1,16 @@
+{# کامپوننت پلاک ایرانی - قابل استفاده مجدد #}
+{# پارامترهای ورودی: plate_1, plate_2, plate_3, plate_4, size (small/large/normal) #}
+<div class="iranian-plate {{ size|default('normal') }}">
+    <div class="plate-blue">
+        <div class="plate-flag"></div>
+        <div class="plate-ir-text">I.R.<br>IRAN</div>
+    </div>
+    <div class="plate-main">
+        <span class="plate-number">{{ plate_1 }}</span>
+        <span class="plate-letter">{{ plate_2 }}</span>
+        <span class="plate-number">{{ plate_3 }}</span>
+    </div>
+    <div class="plate-code">
+        <span class="plate-code-number">{{ plate_4 }}</span>
+    </div>
+</div>
