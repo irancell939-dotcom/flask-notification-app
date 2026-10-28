@@ -1,42 +1,43 @@
-<div class="row">
+{% if vehicles %}
     {% for vehicle in vehicles %}
-    <div class="col-md-6 col-lg-4 mb-4">
-        <a href="{{ url_for('vehicle_detail', id=vehicle.id) }}" class="text-decoration-none text-dark">
-            <div class="card h-100 shadow-sm position-relative {% if vehicle.is_expired() %}border-danger border-2{% endif %}">
-                {% if vehicle.violations_count > 0 %}
-                <span class="badge bg-danger violation-badge">
-                    <i class="fas fa-exclamation-triangle"></i> {{ vehicle.violations_count }} تخلف
-                </span>
-                {% endif %}
-                <div class="card-body text-center">
-                    <h5 class="card-title mb-3">{{ vehicle.driver_name }}</h5>
-                    <div class="license-plate mx-auto mb-3">
-                        <span class="blue-strip">IR</span>
-                        <span>{{ vehicle.plate_4 }}</span>
-                        <span>{{ vehicle.plate_3 }}</span>
-                        <span>{{ vehicle.plate_2 }}</span>
-                        <span>{{ vehicle.plate_1 }}</span>
-                    </div>
-                    {% if vehicle.entrance_gate %}
-                    <p class="text-info small mb-1">
-                        <i class="fas fa-door-open"></i> {{ vehicle.entrance_gate }}
-                    </p>
+        <div class="notification-card" style="cursor: pointer;" onclick="window.location='{{ url_for('vehicle_detail', id=vehicle.id) }}'">
+            <div class="card-top">
+                <div class="card-title-area">
+                    {% if vehicle.violations_count > 0 %}
+                        <span class="badge-important" style="background: #e67e22;">{{ vehicle.violations_count }} تخلف</span>
                     {% endif %}
-                    <p class="text-muted small mb-0">
-                        اعتبار: {{ vehicle.get_shamsi_validity() }}
-                        {% if vehicle.is_expired() %}
-                        <br><span class="badge bg-danger">منقضی شده</span>
-                        {% else %}
-                        <br><span class="badge bg-success">مجاز</span>
-                        {% endif %}
-                    </p>
+                    <div>
+                        <div class="card-title" style="font-size: 16px; margin-bottom: 5px;">
+                            {{ vehicle.driver_name }}
+                        </div>
+                        <div style="font-size: 18px; font-weight: bold; color: #2c3e50; direction: ltr; text-align: right;">
+                            IR {{ vehicle.plate_4 }} {{ vehicle.plate_3 }} {{ vehicle.plate_2 }} {{ vehicle.plate_1 }}
+                        </div>
+                    </div>
                 </div>
             </div>
-        </a>
-    </div>
-    {% else %}
-    <div class="col-12">
-        <div class="alert alert-info text-center">هیچ خودرویی یافت نشد.</div>
-    </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+                {% if vehicle.entrance_gate %}
+                    <span style="background: #e3f2fd; color: #0d47a1; padding: 4px 10px; border-radius: 8px; font-size: 12px;">
+                        🚪 {{ vehicle.entrance_gate }}
+                    </span>
+                {% endif %}
+                
+                {% if vehicle.is_expired() %}
+                    <span class="badge-days expired">منقضی شده</span>
+                {% else %}
+                    <span class="badge-days">مجاز به تردد</span>
+                {% endif %}
+                
+                <span style="background: #f0f0f0; color: #666; padding: 4px 10px; border-radius: 8px; font-size: 12px;">
+                    اعتبار: {{ vehicle.get_shamsi_validity() }}
+                </span>
+            </div>
+        </div>
     {% endfor %}
-</div>
+{% else %}
+    <div class="empty-state">
+        هیچ خودرویی یافت نشد.
+    </div>
+{% endif %}
