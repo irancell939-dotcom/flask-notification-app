@@ -42,7 +42,7 @@
     
     <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
         <span style="background: #e3f2fd; color: #0d47a1; padding: 6px 12px; border-radius: 8px; font-size: 13px;">
-            تاریخ درج: {{ notification.get_iso_created() }}
+            تاریخ درج: <span class="jalali-date" data-iso="{{ notification.get_iso_created() }}">در حال بارگذاری...</span>
         </span>
         <span style="background: #e8f5e9; color: #1b5e20; padding: 6px 12px; border-radius: 8px; font-size: 13px;">
             تاریخ انقضا: {{ notification.get_shamsi_expiry() }}
@@ -58,7 +58,7 @@
     
     {% for comment in notification.comments|sort(attribute='created_at', reverse=true) %}
         <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid #3498db;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-weight: bold; color: #2c3e50; font-size: 14px;">
                         {{ comment.author.full_name if comment.author.full_name else comment.author.username }}
@@ -67,7 +67,7 @@
                         <span class="badge-important" style="background: #f39c12; font-size: 11px; padding: 2px 8px;">مدیر</span>
                     {% endif %}
                 </div>
-                <span style="color: #888; font-size: 12px;">{{ comment.get_iso_created() }}</span>
+                <span class="jalali-date" data-iso="{{ comment.get_iso_created() }}" style="color: #888; font-size: 12px;">در حال بارگذاری...</span>
             </div>
             <p style="margin: 0; color: #555; line-height: 1.6;">{{ comment.text }}</p>
             
