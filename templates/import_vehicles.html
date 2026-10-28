@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}ورود و خروج خودرو با اکسل{% endblock %}
+
+{% block content %}
+<div dir="rtl">
+    <h2 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">
+        📊 مدیریت خودروها با اکسل
+    </h2>
+
+    <div style="background: #e8f5e9; border-right: 4px solid #28a745; padding: 15px; margin-bottom: 25px; border-radius: 4px;">
+        <h3 style="margin-top: 0; color: #1b5e20;">📥 مرحله ۱: دانلود قالب اکسل</h3>
+        <p>روی دکمه زیر کلیک کنید تا فایل CSV شامل تمام خودروهای فعلی سیستم دانلود شود. 
+           این فایل را در اکسل باز کنید و خودروهای جدید خود را به انتهای آن اضافه کنید.</p>
+        <a href="{{ url_for('export_vehicles_excel') }}" 
+           style="display: inline-block; background-color: #28a745; color: white; padding: 10px 20px; 
+                  text-decoration: none; border-radius: 5px; font-weight: bold;">
+            ⬇ دانلود فایل اکسل (CSV)
+        </a>
+    </div>
+
+    <div style="background: #fff3cd; border-right: 4px solid #ffc107; padding: 15px; margin-bottom: 25px; border-radius: 4px;">
+        <h3 style="margin-top: 0; color: #856404;">⚠️ نکات مهم قبل از ویرایش فایل</h3>
+        <ul style="line-height: 1.8;">
+            <li>ستون <strong>validity_date</strong> باید حتماً به فرمت <code>1403/01/15</code> (شمسی) باشد.</li>
+            <li>ستون‌های <strong>plate_1, plate_2, plate_3, plate_4, vehicle_type, color, driver_name, phone, validity_date</strong> اجباری هستند.</li>
+            <li>هنگام ذخیره در اکسل، حتماً از منوی <strong>Save As</strong> گزینهٔ <strong>CSV UTF-8 (Comma delimited)</strong> را انتخاب کنید تا حروف فارسی به‌هم نریزد.</li>
+            <li>فقط ردیف‌های جدید را به انتهای فایل اضافه کنید (ردیف‌های قبلی را حذف نکنید مگر اینکه بخواهید خودروی تکراری ایجاد شود).</li>
+        </ul>
+    </div>
+
+    <div style="background: #e3f2fd; border-right: 4px solid #2196f3; padding: 15px; margin-bottom: 25px; border-radius: 4px;">
+        <h3 style="margin-top: 0; color: #0d47a1;">📤 مرحله ۲: بارگذاری فایل ویرایش‌شده</h3>
+        <form method="POST" action="{{ url_for('import_vehicles_excel') }}" enctype="multipart/form-data">
+            <input type="file" name="excel_file" accept=".csv,.xlsx,.xls" required
+                   style="padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; width: 100%; max-width: 400px;">
+            <br>
+            <button type="submit" 
+                    style="background-color: #2196f3; color: white; padding: 10px 25px; border: none; 
+                           border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 15px;">
+                ⬆ بارگذاری و افزودن خودروها
+            </button>
+        </form>
+    </div>
+
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="{{ url_for('vehicles') }}" style="color: #6c757d; text-decoration: none;">
+            ← بازگشت به لیست خودروها
+        </a>
+    </div>
+</div>
+{% endblock %}
