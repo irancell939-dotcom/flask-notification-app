@@ -14,16 +14,17 @@
     </a>
 </div>
 
-<!-- کارت پلاک -->
+<!-- کارت پلاک بزرگ -->
 <div class="notification-card" style="text-align: center; padding: 25px;">
-    <div style="font-size: 28px; font-weight: bold; color: #2c3e50; direction: ltr; margin-bottom: 15px;">
-        IR {{ vehicle.plate_4 }} {{ vehicle.plate_3 }} {{ vehicle.plate_2 }} {{ vehicle.plate_1 }}
+    {% include 'plate_component.html' with plate_1=vehicle.plate_1, plate_2=vehicle.plate_2, plate_3=vehicle.plate_3, plate_4=vehicle.plate_4, size='large' %}
+    
+    <div style="margin-top: 15px;">
+        {% if vehicle.is_expired() %}
+            <span class="badge-days expired">اعتبار منقضی شده</span>
+        {% else %}
+            <span class="badge-days">مجاز به تردد</span>
+        {% endif %}
     </div>
-    {% if vehicle.is_expired() %}
-        <span class="badge-days expired">اعتبار منقضی شده</span>
-    {% else %}
-        <span class="badge-days">مجاز به تردد</span>
-    {% endif %}
 </div>
 
 <!-- اطلاعات راننده -->
