@@ -33,7 +33,7 @@
 {% if active_filter %}
 <div style="text-align: center; margin-bottom: 15px;">
     <a href="{{ url_for('vehicles') }}" style="background: #6c757d; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px;">
-        ✕ حذف فیلتر و نمایش همه
+         حذف فیلتر و نمایش همه
     </a>
 </div>
 {% endif %}
@@ -59,23 +59,73 @@
     </div>
 </div>
 
-<!-- فرم جستجو -->
-<div style="background: white; padding: 18px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-    <h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 16px;">🔍 جستجوی پلاک و راننده</h3>
-    <form method="GET" action="{{ url_for('vehicles') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
+<!-- فرم جستجو به شکل پلاک ایرانی -->
+<div style="background: white; padding: 20px; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+    <h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 16px; text-align: center;">🔍 جستجوی پلاک و راننده</h3>
+    
+    <form method="GET" action="{{ url_for('vehicles') }}">
         {% if active_filter %}
         <input type="hidden" name="filter" value="{{ active_filter }}">
         {% endif %}
-        <input type="text" name="plate_1" value="{{ plate_1 }}" placeholder="دو رقم (چپ)" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
-        <input type="text" name="plate_2" value="{{ plate_2 }}" placeholder="حرف" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
-        <input type="text" name="plate_3" value="{{ plate_3 }}" placeholder="سه رقم" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
-        <input type="text" name="plate_4" value="{{ plate_4 }}" placeholder="کد شهرستان" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
-        <input type="text" name="driver" value="{{ driver_search }}" placeholder="نام راننده" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; grid-column: 1 / -1;">
-        <button type="submit" style="grid-column: 1 / -1; background: #f39c12; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer;">
-            جستجو
-        </button>
+        
+        <!-- پلاک ایرانی برای جستجو -->
+        <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+            <div class="iranian-plate large" style="direction: rtl; max-width: 420px; width: 100%;">
+                <!-- بخش آبی (سمت چپ در RTL) -->
+                <div class="plate-blue">
+                    <div class="plate-flag"></div>
+                    <div class="plate-ir-text">I.R.<br>IRAN</div>
+                </div>
+                
+                <!-- بخش اصلی پلاک با فیلدهای ورودی -->
+                <div class="plate-main" style="flex: 1; gap: 8px; justify-content: center;">
+                    <!-- دو رقم (سمت چپ در پلاک) -->
+                    <input type="text" name="plate_1" value="{{ plate_1 }}" maxlength="2" placeholder="۱۲"
+                           style="width: 55px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
+                           title="دو رقم اول (سمت چپ)">
+                    
+                    <!-- حرف -->
+                    <input type="text" name="plate_2" value="{{ plate_2 }}" maxlength="1" placeholder="ب"
+                           style="width: 40px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
+                           title="حرف">
+                    
+                    <!-- سه رقم -->
+                    <input type="text" name="plate_3" value="{{ plate_3 }}" maxlength="3" placeholder="۳۴"
+                           style="width: 75px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
+                           title="سه رقم">
+                </div>
+                
+                <!-- کد شهرستان (سمت راست در پلاک) -->
+                <div class="plate-code" style="border-right: 2px solid #2c2c2c; border-left: none;">
+                    <input type="text" name="plate_4" value="{{ plate_4 }}" maxlength="2" placeholder="۱۱"
+                           style="width: 40px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
+                           title="کد شهرستان">
+                </div>
+            </div>
+        </div>
+        
+        <!-- فیلد نام راننده -->
+        <div style="margin-bottom: 15px;">
+            <input type="text" name="driver" value="{{ driver_search }}" placeholder="نام راننده (اختیاری)"
+                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; font-family: Tahoma; text-align: center; background: #fafafa;"
+                   onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
+                   onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+        </div>
+        
+        <!-- دکمه‌ها -->
+        <div style="display: flex; gap: 10px;">
+            <button type="submit" style="flex: 2; background: #f39c12; color: white; padding: 12px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; font-family: Tahoma;">
+                🔍 جستجو
+            </button>
+            <a href="{{ url_for('vehicles') }}" style="flex: 1; background: #6c757d; color: white; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold; font-size: 15px; display: flex; align-items: center; justify-content: center;">
+                پاک کردن
+            </a>
+        </div>
+        
+        <p style="font-size: 12px; color: #888; margin-top: 12px; text-align: center;">
+            * هر فیلد اختیاری است. می‌توانید فقط بخشی از پلاک را وارد کنید.
+        </p>
     </form>
-    <p style="font-size: 12px; color: #888; margin-top: 10px; text-align: center;">* هر فیلد اختیاری است. می‌توانید فقط بخشی از پلاک را وارد کنید.</p>
 </div>
 
 <!-- لیست خودروها -->
