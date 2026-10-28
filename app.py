@@ -2,12 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Notification, Comment, Vehicle, Violation
 from config import Config
-from datetime import datetime, date, timedelta
+from datetime import datetime
 import jdatetime
 import os
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-app = Flask(__name__, template_folder='templates', instance_relative_config=False)
+app = Flask(__name__, instance_relative_config=False)
 app.config.from_object(Config)
 
 app.instance_path = os.path.join(BASE_DIR, 'instance')
@@ -21,60 +21,29 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# ==========================================================
-# بخش ساخت خودکار داده‌های پیش‌فرض در دیتابیس
-# ==========================================================
-with app.app_context():
-    db.create_all()
-    
-    # ۱. ساخت کاربر مدیر پیش‌فرض اگر وجود نداشته باشد
-    if not User.query.filter_by(username='1').first():
-        admin = User(username='1', first_name='مدیر', last_name='سیستم',
-                     is_admin=True, can_add_notification=True)
-        admin.set_password('1')
-        db.session.add(admin)
-        db.session.commit()
-        print("✅ کاربر مدیر پیش‌فرض ایجاد شد: نام کاربری = 1، رمز عبور = 1")
-
-    # ۲. ساخت یک اطلاعیه پیش‌فرض اگر هیچ اطلاعیه‌ای وجود نداشته باشد
-    if not Notification.query.first():
-        admin_user = User.query.filter_by(username='1').first()
-        # تاریخ انقضا را ۳۰ روز در آینده تنظیم می‌کنیم
-        future_date = date.today() + timedelta(days=30)
-        
-        default_notification = Notification(
-            title="🎉 سیستم با موفقیت راه‌اندازی شد!",
-            description="این یک اطلاعیه پیش‌فرض است تا مطمئن شویم اتصال به دیتابیس و نمایش اطلاعات به درستی کار می‌کند. شما می‌توانید پس از ورود به سیستم، این اطلاعیه را ویرایش یا حذف کنید.",
-            expiry_date=future_date,
-            created_by=admin_user.id if admin_user else None,
-            is_approved=True,      # تایید شده تا در صفحه اصلی نمایش داده شود
-            is_important=True,     # مهم باشد تا با برچسب قرمز دیده شود
-            is_archived=False
-        )
-        db.session.add(default_notification)
-        db.session.commit()
-        print("✅ اطلاعیه پیش‌فرض با موفقیت ایجاد شد.")
-# ==========================================================
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+
 @app.context_processor
 def inject_now():
     return {'datetime': datetime}
 
+
+# ========== اطلاعیه‌ها ==========
+
 @app.route('/')
-# @login_required  # همچنان غیرفعال است تا بتوانید بدون لاگین صفحه اصلی و منو را ببینید
+@login_required
 def index():
     notifications = Notification.query.filter(
         Notification.is_archived == False,
         Notification.is_approved == True
     ).order_by(Notification.created_at.desc()).all()
-    
-    # فقط اطلاعیه‌هایی که منقضی نشده‌اند را نشان بده
     active_notifications = [n for n in notifications if not n.is_expired()]
     return render_template('index.html', notifications=active_notifications)
+
 
 @app.route('/pending')
 @login_required
@@ -88,6 +57,7 @@ def pending_notifications():
     ).order_by(Notification.created_at.desc()).all()
     return render_template('pending.html', notifications=pending)
 
+
 @app.route('/approve/<int:item_id>')
 @login_required
 def approve_item(item_id):
@@ -99,14 +69,16 @@ def approve_item(item_id):
     flash('اطلاعیه تایید و منتشر شد', 'success')
     return redirect(url_for('pending_notifications'))
 
+
 @app.route('/archive')
-# @login_required # برای تست، این را هم موقتاً باز گذاشتم
+@login_required
 def archive():
     notifications = Notification.query.filter(
         (Notification.is_archived == True) |
         (Notification.expiry_date < datetime.now().date())
     ).order_by(Notification.created_at.desc()).all()
     return render_template('archive.html', notifications=notifications)
+
 
 @app.route('/add', methods=['GET', 'POST'])
 @login_required
@@ -147,11 +119,13 @@ def add_item():
 
     return render_template('add_item.html')
 
+
 @app.route('/view/<int:item_id>')
-# @login_required
+@login_required
 def view_item(item_id):
     notification = Notification.query.get_or_404(item_id)
     return render_template('view_item.html', notification=notification)
+
 
 @app.route('/edit/<int:item_id>', methods=['GET', 'POST'])
 @login_required
@@ -188,6 +162,7 @@ def edit_item(item_id):
 
     return render_template('edit_item.html', notification=notification)
 
+
 @app.route('/delete/<int:item_id>')
 @login_required
 def delete_item(item_id):
@@ -200,6 +175,7 @@ def delete_item(item_id):
     flash('اطلاعیه حذف شد', 'success')
     return redirect(url_for('index'))
 
+
 @app.route('/toggle_important/<int:item_id>')
 @login_required
 def toggle_important(item_id):
@@ -210,6 +186,7 @@ def toggle_important(item_id):
     notification.is_important = not notification.is_important
     db.session.commit()
     return redirect(url_for('index'))
+
 
 @app.route('/archive_item/<int:item_id>')
 @login_required
@@ -223,6 +200,9 @@ def archive_item(item_id):
     flash('اطلاعیه بایگانی شد', 'success')
     return redirect(url_for('index'))
 
+
+# ========== کامنت‌ها ==========
+
 @app.route('/comment/add/<int:item_id>', methods=['POST'])
 @login_required
 def add_comment(item_id):
@@ -234,6 +214,7 @@ def add_comment(item_id):
         flash('نظر شما با موفقیت ثبت شد', 'success')
     return redirect(url_for('view_item', item_id=item_id))
 
+
 @app.route('/comment/delete/<int:comment_id>')
 @login_required
 def delete_comment(comment_id):
@@ -244,8 +225,11 @@ def delete_comment(comment_id):
         flash('نظر حذف شد', 'success')
     return redirect(url_for('view_item', item_id=comment.notification_id))
 
+
+# ========== خودروها ==========
+
 @app.route('/vehicles')
-# @login_required
+@login_required
 def vehicles():
     plate_1 = request.args.get('plate_1', '').strip()
     plate_2 = request.args.get('plate_2', '').strip()
@@ -280,6 +264,7 @@ def vehicles():
                            plate_3=plate_3, plate_4=plate_4,
                            driver_search=driver_search)
 
+
 @app.route('/live_search_driver')
 @login_required
 def live_search_driver():
@@ -294,11 +279,13 @@ def live_search_driver():
     html = render_template('vehicle_cards_partial.html', vehicles=vehicles)
     return jsonify({'html': html})
 
+
 @app.route('/vehicle/<int:id>')
 @login_required
 def vehicle_detail(id):
     vehicle = Vehicle.query.get_or_404(id)
     return render_template('vehicle_detail.html', vehicle=vehicle)
+
 
 @app.route('/add_vehicle', methods=['GET', 'POST'])
 @login_required
@@ -341,6 +328,7 @@ def add_vehicle():
 
     return render_template('add_vehicle.html')
 
+
 @app.route('/edit_vehicle/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_vehicle(id):
@@ -382,6 +370,7 @@ def edit_vehicle(id):
 
     return render_template('edit_vehicle.html', vehicle=vehicle)
 
+
 @app.route('/delete_vehicle/<int:id>')
 @login_required
 def delete_vehicle(id):
@@ -393,6 +382,9 @@ def delete_vehicle(id):
     db.session.commit()
     flash('خودرو حذف شد', 'success')
     return redirect(url_for('vehicles'))
+
+
+# ========== تخلفات ==========
 
 @app.route('/violation/add/<int:vehicle_id>', methods=['POST'])
 @login_required
@@ -412,6 +404,7 @@ def add_violation(vehicle_id):
     flash('تخلف با موفقیت ثبت شد', 'success')
     return redirect(url_for('vehicle_detail', id=vehicle_id))
 
+
 @app.route('/violation/delete/<int:violation_id>')
 @login_required
 def delete_violation(violation_id):
@@ -425,6 +418,9 @@ def delete_violation(violation_id):
     db.session.commit()
     flash('تخلف حذف شد', 'success')
     return redirect(url_for('vehicle_detail', id=vehicle_id))
+
+
+# ========== احراز هویت ==========
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -440,11 +436,15 @@ def login():
         flash('نام کاربری یا رمز عبور اشتباه است', 'error')
     return render_template('login.html')
 
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
+
+
+# ========== مدیریت کاربران ==========
 
 @app.route('/manage_users', methods=['GET', 'POST'])
 @login_required
@@ -503,10 +503,36 @@ def manage_users():
     users = User.query.all()
     return render_template('manage_users.html', users=users)
 
+
+# ========== راه‌اندازی دیتابیس ==========
+
+def init_db():
+    with app.app_context():
+        db.create_all()
+        if not User.query.filter_by(username='1').first():
+            admin = User(username='1', first_name='مدیر', last_name='سیستم',
+                         is_admin=True, can_add_notification=True)
+            admin.set_password('1')
+            db.session.add(admin)
+            db.session.commit()
+            print("کاربر مدیر پیش‌فرض ایجاد شد: نام کاربری = 1، رمز عبور = 1")
+
+
 if __name__ == '__main__':
+    init_db()
     print("=" * 50)
     print("برنامه با موفقیت اجرا شد!")
     print("آدرس: http://localhost:5000")
     print("نام کاربری مدیر: 1 | رمز عبور: 1")
     print("=" * 50)
+    
+    try:
+        import webbrowser
+        import threading
+        def open_browser():
+            webbrowser.open_new('http://localhost:5000')
+        threading.Timer(1.5, open_browser).start()
+    except Exception:
+        pass
+    
     app.run(debug=True, host='0.0.0.0', port=5000)
