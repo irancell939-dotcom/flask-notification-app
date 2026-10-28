@@ -221,10 +221,31 @@ def vehicles():
     plate_3 = request.args.get('plate_3', '').strip()
     plate_4 = request.args.get('plate_4', '').strip()
     driver_search = request.args.get('driver', '').strip()
+    filter_type = request.args.get('filter', '').strip()
     
     all_vehicles = Vehicle.query.order_by(Vehicle.created_at.desc()).all()
-    filtered = all_vehicles
     
+    # محاسبه آمار کلی
+    total = len(all_vehicles)
+    active_count = len([v for v in all_vehicles if not v.is_expired()])
+    expired_count = len([v for v in all_vehicles if v.is_expired()])
+    violation_count = len([v for v in all_vehicles if v.violations_count > 0])
+    
+    # اعمال فیلتر مدیر
+    if filter_type and current_user.is_admin:
+        if filter_type == 'active':
+            filtered = [v for v in all_vehicles if not v.is_expired()]
+        elif filter_type == 'expired':
+            filtered = [v for v in all_vehicles if v.is_expired()]
+        elif filter_type == 'violation':
+            filtered = [v for v in all_vehicles if v.violations_count > 0]
+        else:
+            filtered = all_vehicles
+    else:
+        filtered = all_vehicles
+        filter_type = ''
+    
+    # اعمال فیلتر جستجو
     if plate_1:
         filtered = [v for v in filtered if plate_1 in v.plate_1]
     if plate_2:
@@ -236,15 +257,13 @@ def vehicles():
     if driver_search:
         filtered = [v for v in filtered if driver_search.lower() in v.driver_name.lower()]
     
-    total = len(all_vehicles)
-    active = len([v for v in all_vehicles if not v.is_expired()])
-    expired = len([v for v in all_vehicles if v.is_expired()])
-    
     return render_template('vehicle_list.html',
                            vehicles=filtered,
                            total_vehicles=total,
-                           active_vehicles=active,
-                           expired_vehicles=expired,
+                           active_count=active_count,
+                           expired_count=expired_count,
+                           violation_count=violation_count,
+                           active_filter=filter_type,
                            plate_1=plate_1, plate_2=plate_2,
                            plate_3=plate_3, plate_4=plate_4,
                            driver_search=driver_search)
@@ -491,7 +510,7 @@ def import_vehicles_excel():
                 flash(f'{added} خودرو با موفقیت اضافه شد', 'success')
             
             if errors:
-                for err in errors[:10]:  # نمایش حداکثر ۱۰ خطا
+                for err in errors[:10]:  # نمایش حداکثر ۱ خطا
                     flash(err, 'error')
                 if len(errors) > 10:
                     flash(f'... و {len(errors) - 10} خطای دیگر', 'error')
