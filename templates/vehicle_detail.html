@@ -14,9 +14,23 @@
     </a>
 </div>
 
-<!-- کارت پلاک بزرگ -->
+<!-- کارت پلاک و عکس -->
 <div class="notification-card" style="text-align: center; padding: 25px;">
-    <div class="iranian-plate large">
+    {% if vehicle.photo_path %}
+    <div style="margin-bottom: 15px;">
+        <img src="{{ url_for('uploaded_file', filename=vehicle.photo_path.split('/')[-1]) }}" 
+             alt="عکس {{ vehicle.driver_name }}"
+             style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #f39c12; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+    </div>
+    {% else %}
+    <div style="margin-bottom: 15px;">
+        <div style="width: 120px; height: 120px; border-radius: 50%; background: #f0f0f0; display: inline-flex; align-items: center; justify-content: center; font-size: 48px; color: #888; border: 4px solid #ddd;">
+            👤
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="iranian-plate large" style="direction: ltr; margin: 0 auto;">
         <div class="plate-blue">
             <div class="plate-flag"></div>
             <div class="plate-ir-text">I.R.<br>IRAN</div>
@@ -39,6 +53,29 @@
         {% endif %}
     </div>
 </div>
+
+<!-- اطلاعات هویتی -->
+{% if vehicle.national_id or vehicle.dormitory_status %}
+<div class="notification-card" style="margin-top: 15px; border-right: 4px solid #9c27b0;">
+    <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #9c27b0; padding-bottom: 8px;">🆔 اطلاعات هویتی</h3>
+    
+    <div style="display: grid; gap: 12px;">
+        {% if vehicle.national_id %}
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">شماره ملی:</span>
+            <span style="font-weight: bold; color: #2c3e50; direction: ltr;">{{ vehicle.national_id }}</span>
+        </div>
+        {% endif %}
+        
+        {% if vehicle.dormitory_status %}
+        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+            <span style="color: #666; font-size: 14px;">وضعیت خوابگاه:</span>
+            <span style="font-weight: bold; color: #9c27b0;">{{ vehicle.dormitory_status }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
 
 <!-- اطلاعات راننده -->
 <div class="notification-card" style="margin-top: 15px;">
@@ -123,9 +160,9 @@
     </div>
 </div>
 
-<!-- تاریخ ثبت با تبدیل شمسی مرورگر -->
+<!-- تاریخ ثبت -->
 <div style="text-align: center; color: #888; font-size: 13px; margin: 15px 0;">
-    تاریخ ثبت: <span class="jalali-date" data-iso="{{ vehicle.get_iso_created() }}">در حال بارگذاری...</span>
+    تاریخ ثبت: <span class="jalali-date" data-iso="{{ vehicle.get_iso_created() }}">{{ vehicle.get_iso_created() }}</span>
 </div>
 
 {% if vehicle.description %}
@@ -159,7 +196,7 @@
                         کاربر حذف شده
                     {% endif %}
                 </span>
-                <span class="jalali-date" data-iso="{{ v.get_iso_created() }}" style="color: #888; font-size: 12px;">در حال بارگذاری...</span>
+                <span class="jalali-date" data-iso="{{ v.get_iso_created() }}" style="color: #888; font-size: 12px;">{{ v.get_iso_created() }}</span>
             </div>
             <p style="margin: 0; color: #555; line-height: 1.6;">{{ v.description }}</p>
             
