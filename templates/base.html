@@ -25,7 +25,7 @@
         .app-header {
             background-color: #1e1e2e;
             color: white;
-            padding: 15px 15px;
+            padding: 15px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -59,25 +59,20 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
         }
 
         .hamburger-btn:hover {
             background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.6);
         }
 
         .header-spacer {
             width: 44px;
         }
 
-        /* ========== منوی کشویی (Sidebar) ========== */
+        /* ========== منوی کشویی ========== */
         .sidebar-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.5);
             z-index: 200;
             opacity: 0;
@@ -133,6 +128,11 @@
             font-weight: bold;
         }
 
+        .sidebar-role.user {
+            background-color: #3498db;
+            color: white;
+        }
+
         .sidebar-menu {
             list-style: none;
             padding: 10px 0;
@@ -148,8 +148,7 @@
             border-right: 3px solid transparent;
         }
 
-        .sidebar-menu li a:hover,
-        .sidebar-menu li a.active {
+        .sidebar-menu li a:hover {
             background-color: rgba(255,255,255,0.05);
             color: white;
             border-right-color: #f39c12;
@@ -187,7 +186,7 @@
             position: relative;
         }
 
-        .notification-card .card-top {
+        .card-top {
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
@@ -195,7 +194,7 @@
             margin-bottom: 12px;
         }
 
-        .notification-card .card-title-area {
+        .card-title-area {
             flex: 1;
             display: flex;
             align-items: flex-start;
@@ -203,7 +202,7 @@
             flex-wrap: wrap;
         }
 
-        .notification-card .card-title {
+        .card-title {
             font-size: 18px;
             font-weight: bold;
             color: #2c2c2c;
@@ -211,7 +210,7 @@
             line-height: 1.6;
         }
 
-        .notification-card .card-title:hover {
+        .card-title:hover {
             color: #f39c12;
         }
 
@@ -244,7 +243,6 @@
             background-color: #f39c12;
         }
 
-        /* منوی سه‌نقطه */
         .card-menu-btn {
             background: none;
             border: none;
@@ -325,7 +323,166 @@
             font-size: 16px;
         }
 
-        /* ========== دسکتاپ ========== */
+        /* ========== پلاک خودرو ایرانی ========== */
+        .iranian-plate {
+            display: inline-flex;
+            align-items: stretch;
+            background: white;
+            border: 3px solid #2c2c2c;
+            border-radius: 8px;
+            overflow: hidden;
+            font-family: Tahoma, Arial, sans-serif;
+            direction: ltr;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            min-height: 55px;
+        }
+
+        .iranian-plate .plate-blue {
+            background: #0033a0;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 6px;
+            min-width: 45px;
+            border-right: 2px solid #2c2c2c;
+        }
+
+        .iranian-plate .plate-flag {
+            width: 22px;
+            height: 14px;
+            background: linear-gradient(to bottom, #239f40 33%, white 33%, white 66%, #da0000 66%);
+            border-radius: 2px;
+            margin-bottom: 3px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .iranian-plate .plate-ir-text {
+            font-size: 9px;
+            font-weight: bold;
+            line-height: 1.1;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .iranian-plate .plate-main {
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            flex: 1;
+            background: white;
+        }
+
+        .iranian-plate .plate-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a1a1a;
+            letter-spacing: 2px;
+            direction: rtl;
+        }
+
+        .iranian-plate .plate-letter {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin: 0 6px;
+            direction: rtl;
+        }
+
+        .iranian-plate .plate-code {
+            background: white;
+            border-left: 2px solid #2c2c2c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            min-width: 40px;
+        }
+
+        .iranian-plate .plate-code-number {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+
+        /* نسخه کوچک برای کارت‌ها */
+        .iranian-plate.small {
+            min-height: 40px;
+            border-width: 2px;
+            border-radius: 6px;
+        }
+
+        .iranian-plate.small .plate-blue {
+            min-width: 35px;
+            padding: 3px 4px;
+        }
+
+        .iranian-plate.small .plate-flag {
+            width: 16px;
+            height: 10px;
+        }
+
+        .iranian-plate.small .plate-ir-text {
+            font-size: 7px;
+        }
+
+        .iranian-plate.small .plate-number {
+            font-size: 20px;
+        }
+
+        .iranian-plate.small .plate-letter {
+            font-size: 18px;
+        }
+
+        .iranian-plate.small .plate-code {
+            min-width: 30px;
+            padding: 0 6px;
+        }
+
+        .iranian-plate.small .plate-code-number {
+            font-size: 16px;
+        }
+
+        /* نسخه بزرگ برای جزئیات */
+        .iranian-plate.large {
+            min-height: 75px;
+            border-width: 4px;
+            border-radius: 10px;
+        }
+
+        .iranian-plate.large .plate-blue {
+            min-width: 60px;
+            padding: 6px 8px;
+        }
+
+        .iranian-plate.large .plate-flag {
+            width: 30px;
+            height: 18px;
+        }
+
+        .iranian-plate.large .plate-ir-text {
+            font-size: 11px;
+        }
+
+        .iranian-plate.large .plate-number {
+            font-size: 40px;
+        }
+
+        .iranian-plate.large .plate-letter {
+            font-size: 34px;
+        }
+
+        .iranian-plate.large .plate-code {
+            min-width: 55px;
+            padding: 0 14px;
+        }
+
+        .iranian-plate.large .plate-code-number {
+            font-size: 32px;
+        }
+
+        /* ========== ریسپانسیو ========== */
         @media (min-width: 769px) {
             .main-content {
                 padding: 30px 20px;
@@ -359,7 +516,7 @@
                 {% if current_user.is_admin %}
                     <span class="sidebar-role">مدیر</span>
                 {% else %}
-                    <span class="sidebar-role" style="background:#3498db; color:white;">کاربر</span>
+                    <span class="sidebar-role user">کاربر</span>
                 {% endif %}
             </div>
         </div>
@@ -372,7 +529,6 @@
                 <li><a href="{{ url_for('pending_notifications') }}">در انتظار تایید</a></li>
                 <li><a href="{{ url_for('add_item') }}">افزودن اطلاعیه</a></li>
                 <li><a href="{{ url_for('add_vehicle') }}">افزودن خودرو</a></li>
-                <li><a href="{{ url_for('import_vehicles_excel') }}">ورود/خروج اکسل خودرو</a></li>
                 <li><a href="{{ url_for('manage_users') }}">مدیریت کاربران</a></li>
             {% elif current_user.can_add_notification %}
                 <li><a href="{{ url_for('add_item') }}">ثبت اطلاعیه</a></li>
