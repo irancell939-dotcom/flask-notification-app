@@ -1,123 +1,175 @@
 {% extends "base.html" %}
 {% block title %}جزئیات خودرو{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <!-- کادر جزئیات خودرو - پس‌زمینه آبی روشن -->
-        <div class="card shadow-sm mb-4" style="background-color: #e3f2fd; border: 1px solid #90caf9;">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">جزئیات خودرو</h4>
-                <div>
-                    {% if current_user.is_admin %}
-                    <a href="{{ url_for('edit_vehicle', id=vehicle.id) }}" class="btn btn-sm btn-warning">
-                        <i class="fas fa-edit"></i> ویرایش
-                    </a>
-                    {% endif %}
-                    <a href="{{ url_for('vehicles') }}" class="btn btn-sm btn-light">بازگشت</a>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="text-center mb-4">
-                    <div class="license-plate mx-auto" style="font-size: 1.5rem;">
-                        <span class="blue-strip">IR</span>
-                        <span>{{ vehicle.plate_4 }}</span>
-                        <span>{{ vehicle.plate_3 }}</span>
-                        <span>{{ vehicle.plate_2 }}</span>
-                        <span>{{ vehicle.plate_1 }}</span>
-                    </div>
-                    {% if vehicle.is_expired() %}
-                    <div class="mt-2"><span class="badge bg-danger fs-6">اعتبار منقضی شده</span></div>
-                    {% else %}
-                    <div class="mt-2"><span class="badge bg-success fs-6">مجاز به تردد</span></div>
-                    {% endif %}
-                </div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1 class="page-title" style="margin: 0; flex: 1;">جزئیات خودرو</h1>
+    {% if current_user.is_admin %}
+        <a href="{{ url_for('edit_vehicle', id=vehicle.id) }}" style="background: #f39c12; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px; margin-right: 10px;">
+            ویرایش
+        </a>
+    {% endif %}
+    <a href="{{ url_for('vehicles') }}" style="background: #6c757d; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
+        بازگشت
+    </a>
+</div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-2"><strong>نام راننده:</strong> {{ vehicle.driver_name }}</div>
-                    <div class="col-md-6 mb-2"><strong>نوع خودرو:</strong> {{ vehicle.vehicle_type }}</div>
-                    <div class="col-md-6 mb-2"><strong>رنگ:</strong> {{ vehicle.color }}</div>
-                    <div class="col-md-6 mb-2"><strong>سمت:</strong> {{ vehicle.position or '-' }}</div>
-                    <div class="col-md-6 mb-2"><strong>شماره دانشجویی:</strong> {{ vehicle.student_id or '-' }}</div>
-                    <div class="col-md-6 mb-2"><strong>رشته تحصیلی:</strong> {{ vehicle.major or '-' }}</div>
-                    <div class="col-md-6 mb-2"><strong>تلفن:</strong> {{ vehicle.phone }}</div>
-                    <div class="col-md-6 mb-2"><strong>پارکینگ:</strong> {{ vehicle.parking or '-' }}</div>
-                    <div class="col-md-6 mb-2"><strong>تاریخ اعتبار:</strong> {{ vehicle.get_shamsi_validity() }}</div>
-                    <div class="col-md-6 mb-2"><strong>درب ورود:</strong> {{ vehicle.entrance_gate or '-' }}</div>
-                    
-                    {% if current_user.is_admin %}
-                    <div class="col-md-6 mb-2"><strong>معرف:</strong> {{ vehicle.referrer or '-' }}</div>
-                    <div class="col-md-6 mb-2"><strong>محل بایگانی:</strong> {{ vehicle.archive_location or '-' }}</div>
-                    {% endif %}
-                </div>
+<!-- کارت پلاک -->
+<div class="notification-card" style="text-align: center; padding: 25px;">
+    <div style="font-size: 28px; font-weight: bold; color: #2c3e50; direction: ltr; margin-bottom: 15px;">
+        IR {{ vehicle.plate_4 }} {{ vehicle.plate_3 }} {{ vehicle.plate_2 }} {{ vehicle.plate_1 }}
+    </div>
+    {% if vehicle.is_expired() %}
+        <span class="badge-days expired">اعتبار منقضی شده</span>
+    {% else %}
+        <span class="badge-days">مجاز به تردد</span>
+    {% endif %}
+</div>
 
-                <hr>
-                <div class="text-muted small">
-                    <strong>تاریخ ثبت:</strong> 
-                    <span class="local-time" data-iso="{{ vehicle.get_iso_created() }}">
-                        {{ vehicle.get_iso_created() }}
-                    </span>
-                </div>
-
-                {% if vehicle.description %}
-                <hr>
-                <p><strong>توضیحات:</strong><br>{{ vehicle.description }}</p>
-                {% endif %}
-
-                {% if current_user.is_admin %}
-                <hr>
-                <a href="{{ url_for('delete_vehicle', id=vehicle.id) }}"
-                   class="btn btn-danger"
-                   onclick="return confirm('آیا از حذف این خودرو اطمینان دارید؟')">
-                    <i class="fas fa-trash"></i> حذف خودرو
-                </a>
-                {% endif %}
-            </div>
+<!-- اطلاعات راننده -->
+<div class="notification-card" style="margin-top: 15px;">
+    <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #f39c12; padding-bottom: 8px;">اطلاعات راننده</h3>
+    
+    <div style="display: grid; gap: 12px;">
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">نام راننده:</span>
+            <span style="font-weight: bold; color: #2c3e50;">{{ vehicle.driver_name }}</span>
         </div>
-
-        <!-- کادر تخلفات - پس‌زمینه زرد کرم -->
-        <div class="card shadow-sm" style="background-color: #fff8e1; border: 1px solid #ffcc80;">
-            <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
-                <strong><i class="fas fa-exclamation-triangle"></i> تخلفات ثبت شده ({{ vehicle.violations|length }})</strong>
-            </div>
-            <div class="card-body">
-                {% for v in vehicle.violations|sort(attribute='created_at', reverse=true) %}
-                <div class="border-bottom pb-3 mb-3">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <strong class="text-danger">
-                                <i class="fas fa-user"></i>
-                                {{ v.reporter.full_name if v.reporter and v.reporter.full_name else (v.reporter.username if v.reporter else 'کاربر حذف شده') }}
-                            </strong>
-                            <small class="text-muted ms-2 local-time" data-iso="{{ v.get_iso_created() }}">
-                                {{ v.get_iso_created() }}
-                            </small>
-                        </div>
-                        {% if current_user.is_admin %}
-                        <a href="{{ url_for('delete_violation', violation_id=v.id) }}"
-                           class="btn btn-sm btn-outline-danger"
-                           onclick="return confirm('حذف این تخلف؟')">
-                            <i class="fas fa-trash"></i>
-                        </a>
-                        {% endif %}
-                    </div>
-                    <p class="mt-2 mb-0">{{ v.description }}</p>
-                </div>
-                {% else %}
-                <p class="text-muted text-center mb-3">هنوز تخلفی ثبت نشده است.</p>
-                {% endfor %}
-
-                <hr>
-                <form method="POST" action="{{ url_for('add_violation', vehicle_id=vehicle.id) }}">
-                    <div class="input-group">
-                        <textarea name="description" class="form-control" rows="2"
-                                  placeholder="شرح تخلف را وارد کنید..." required></textarea>
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-plus"></i> ثبت تخلف
-                        </button>
-                    </div>
-                </form>
-            </div>
+        
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">نوع خودرو:</span>
+            <span style="font-weight: bold; color: #2c3e50;">{{ vehicle.vehicle_type }}</span>
         </div>
+        
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">رنگ:</span>
+            <span style="font-weight: bold; color: #2c3e50;">{{ vehicle.color }}</span>
+        </div>
+        
+        {% if vehicle.position %}
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">سمت:</span>
+            <span style="font-weight: bold; color: #2c3e50;">{{ vehicle.position }}</span>
+        </div>
+        {% endif %}
+        
+        {% if vehicle.student_id %}
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">شماره دانشجویی:</span>
+            <span style="font-weight: bold; color: #2c3e50;">{{ vehicle.student_id }}</span>
+        </div>
+        {% endif %}
+        
+        {% if vehicle.major %}
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">رشته تحصیلی:</span>
+            <span style="font-weight: bold; color: #2c3e50;">{{ vehicle.major }}</span>
+        </div>
+        {% endif %}
+        
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">تلفن:</span>
+            <span style="font-weight: bold; color: #2c3e50; direction: ltr;">{{ vehicle.phone }}</span>
+        </div>
+        
+        {% if vehicle.parking %}
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">پارکینگ:</span>
+            <span style="font-weight: bold; color: #2c3e50;">{{ vehicle.parking }}</span>
+        </div>
+        {% endif %}
+        
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">تاریخ اعتبار:</span>
+            <span style="font-weight: bold; color: #28a745;">{{ vehicle.get_shamsi_validity() }}</span>
+        </div>
+        
+        {% if vehicle.entrance_gate %}
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+            <span style="color: #666; font-size: 14px;">درب ورود:</span>
+            <span style="font-weight: bold; color: #2c3e50;">{{ vehicle.entrance_gate }}</span>
+        </div>
+        {% endif %}
+        
+        {% if current_user.is_admin %}
+            {% if vehicle.referrer %}
+            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+                <span style="color: #666; font-size: 14px;">معرف:</span>
+                <span style="font-weight: bold; color: #2c3e50;">{{ vehicle.referrer }}</span>
+            </div>
+            {% endif %}
+            
+            {% if vehicle.archive_location %}
+            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                <span style="color: #666; font-size: 14px;">محل بایگانی:</span>
+                <span style="font-weight: bold; color: #2c3e50;">{{ vehicle.archive_location }}</span>
+            </div>
+            {% endif %}
+        {% endif %}
     </div>
 </div>
+
+<!-- تاریخ ثبت -->
+<div style="text-align: center; color: #888; font-size: 13px; margin: 15px 0;">
+    تاریخ ثبت: {{ vehicle.get_iso_created() }}
+</div>
+
+{% if vehicle.description %}
+<div class="notification-card" style="margin-top: 15px;">
+    <h3 style="margin-bottom: 10px; color: #2c3e50;">توضیحات:</h3>
+    <p style="line-height: 1.8; color: #555;">{{ vehicle.description }}</p>
+</div>
+{% endif %}
+
+{% if current_user.is_admin %}
+<div style="margin-top: 20px; text-align: center;">
+    <a href="{{ url_for('delete_vehicle', id=vehicle.id) }}" style="background: #e74c3c; color: white; padding: 12px 30px; border-radius: 10px; text-decoration: none; font-weight: bold;" onclick="return confirm('آیا از حذف این خودرو مطمئن هستید؟')">
+        حذف خودرو
+    </a>
+</div>
+{% endif %}
+
+<!-- تخلفات -->
+<div class="notification-card" style="margin-top: 20px;">
+    <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 8px;">
+        تخلفات ثبت شده ({{ vehicle.violations|length }})
+    </h3>
+    
+    {% for v in vehicle.violations|sort(attribute='created_at', reverse=true) %}
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid #e74c3c;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-weight: bold; color: #2c3e50; font-size: 14px;">
+                    {{ v.reporter.full_name if v.reporter and v.reporter.full_name else (v.reporter.username if v.reporter else 'کاربر حذف شده') }}
+                </span>
+                <span style="color: #888; font-size: 12px;">{{ v.get_iso_created() }}</span>
+            </div>
+            <p style="margin: 0; color: #555; line-height: 1.6;">{{ v.description }}</p>
+            
+            {% if current_user.is_admin %}
+                <div style="margin-top: 10px; text-align: left;">
+                    <a href="{{ url_for('delete_violation', violation_id=v.id) }}" style="color: #e74c3c; font-size: 13px; text-decoration: none;" onclick="return confirm('آیا از حذف این تخلف مطمئن هستید؟')">
+                        حذف تخلف
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="empty-state" style="padding: 20px;">
+            هنوز تخلفی ثبت نشده است.
+        </div>
+    {% endfor %}
+</div>
+
+<!-- فرم ثبت تخلف -->
+{% if current_user.is_authenticated %}
+<div class="notification-card" style="margin-top: 20px;">
+    <h3 style="margin-bottom: 15px; color: #2c3e50;">ثبت تخلف جدید</h3>
+    <form method="POST" action="{{ url_for('add_violation', vehicle_id=vehicle.id) }}">
+        <textarea name="description" placeholder="شرح تخلف را وارد کنید..." required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: vertical; min-height: 80px; font-family: Tahoma;"></textarea>
+        <button type="submit" style="width: 100%; background: #e74c3c; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px;">
+            ثبت تخلف
+        </button>
+    </form>
+</div>
+{% endif %}
 {% endblock %}
