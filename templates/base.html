@@ -526,7 +526,7 @@
             </div>
             <div class="header-spacer"></div>
         </div>
-        <div class="header-subtitle">برنامه نویس: محمدعمر خاوران</div>
+        <div class="header-subtitle">1405  </div>
     </header>
 
     <!-- Overlay -->
@@ -582,19 +582,77 @@
 
     <!-- فوتر -->
     <footer class="app-footer">
-        <div>© ۱۴۰۵ - سامانه اطلاع رسانی امین</div>
+        <div>© ۱۴۰ - سامانه اطلاع رسانی امین</div>
         <div class="programmer">برنامه نویس: محمدعمر خاوران</div>
     </footer>
 
-    <script src="{{ url_for('static', filename='js/jalali.js') }}"></script>
+    <!-- اسکریپت تبدیل تاریخ شمسی (مستقیماً داخل base.html) -->
     <script>
+        // تبدیل تاریخ میلادی به شمسی
+        function toJalali(gy, gm, gd) {
+            var g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+            var jy = (gy <= 1600) ? 0 : 979;
+            gy -= (gy <= 1600) ? 621 : 1600;
+            var gy2 = (gm > 2) ? (gy + 1) : gy;
+            var days = 365 * gy + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100)
+                     + Math.floor((gy2 + 399) / 400) - 80 + gd + g_d_m[gm - 1];
+            jy += 33 * Math.floor(days / 12053);
+            days %= 12053;
+            jy += 4 * Math.floor(days / 1461);
+            days %= 1461;
+            if (days > 365) {
+                jy += Math.floor((days - 1) / 365);
+                days = (days - 1) % 365;
+            }
+            var jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+            var jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+            return [jy, jm, jd];
+        }
+
+        // فرمت کردن تاریخ شمسی با ساعت
+        function formatJalaliDate(isoString) {
+            if (!isoString) return '-';
+            try {
+                // حذف حرف Z آخر برای سازگاری بهتر
+                var cleanIso = isoString.replace('Z', '');
+                var d = new Date(cleanIso);
+                if (isNaN(d.getTime())) return isoString;
+                
+                var j = toJalali(d.getFullYear(), d.getMonth() + 1, d.getDate());
+                var h = d.getHours().toString().padStart(2, '0');
+                var m = d.getMinutes().toString().padStart(2, '0');
+                
+                return j[0] + '/' + j[1].toString().padStart(2, '0') + '/' + j[2].toString().padStart(2, '0')
+                     + ' - ' + h + ':' + m;
+            } catch(e) {
+                return isoString;
+            }
+        }
+
+        // تبدیل تمام عناصر با کلاس jalali-date
+        function convertAllDates() {
+            var elements = document.querySelectorAll('.jalali-date');
+            for (var i = 0; i < elements.length; i++) {
+                var el = elements[i];
+                var iso = el.getAttribute('data-iso');
+                if (iso) {
+                    el.textContent = formatJalaliDate(iso);
+                }
+            }
+        }
+
+        // اجرای خودکار پس از بارگذاری کامل صفحه
+        window.addEventListener('load', convertAllDates);
+        document.addEventListener('DOMContentLoaded', convertAllDates);
+
+        // توابع منو
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('sidebarOverlay').classList.toggle('active');
         }
 
         function toggleCardActions(id) {
-            const el = document.getElementById('actions-' + id);
+            var el = document.getElementById('actions-' + id);
             if (el) el.classList.toggle('show');
         }
 
