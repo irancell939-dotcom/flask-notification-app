@@ -7,10 +7,25 @@
                         <span class="badge-important" style="background: #e67e22;">{{ vehicle.violations_count }} تخلف</span>
                     {% endif %}
                     <div style="flex: 1;">
-                        <div class="card-title" style="font-size: 16px; margin-bottom: 8px;">
+                        <div class="card-title" style="font-size: 16px; margin-bottom: 10px;">
                             {{ vehicle.driver_name }}
                         </div>
-                        {% include 'plate_component.html' with context %}
+                        
+                        <!-- پلاک ایرانی -->
+                        <div class="iranian-plate small">
+                            <div class="plate-blue">
+                                <div class="plate-flag"></div>
+                                <div class="plate-ir-text">I.R.<br>IRAN</div>
+                            </div>
+                            <div class="plate-main">
+                                <span class="plate-number">{{ vehicle.plate_1 }}</span>
+                                <span class="plate-letter">{{ vehicle.plate_2 }}</span>
+                                <span class="plate-number">{{ vehicle.plate_3 }}</span>
+                            </div>
+                            <div class="plate-code">
+                                <span class="plate-code-number">{{ vehicle.plate_4 }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
