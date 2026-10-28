@@ -70,7 +70,7 @@
         
         .card-header .title {
             font-weight: bold;
-            font-size: 10px;
+            font-size: 11px;
         }
         
         .card-header .subtitle {
@@ -83,90 +83,95 @@
         .card-body {
             display: flex;
             gap: 6px;
-            height: calc(100% - 35px);
+            height: calc(100% - 22px);
         }
         
-        /* بخش عکس */
-        .photo-section {
+        /* بخش سمت چپ: پلاک + مجاز */
+        .left-section {
             flex-shrink: 0;
-            width: 2.4cm;
+            width: 2.6cm;
             display: flex;
             flex-direction: column;
             gap: 3px;
         }
         
-        .photo {
-            width: 2.4cm;
-            height: 3cm;
-            border-radius: 5px;
-            object-fit: cover;
-            border: 1.5px solid #f39c12;
-            background: #f0f0f0;
-        }
-        
-        .photo-placeholder {
-            width: 2.4cm;
-            height: 3cm;
-            border-radius: 5px;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: #888;
-            border: 1.5px dashed #ccc;
-        }
-        
-        /* پلاک کوچک زیر عکس */
-        .mini-plate {
+        /* پلاک بزرگ */
+        .big-plate {
             display: flex;
             align-items: stretch;
             background: white;
-            border: 1.5px solid #2c2c2c;
-            border-radius: 3px;
+            border: 2px solid #2c2c2c;
+            border-radius: 4px;
             overflow: hidden;
             direction: ltr;
-            height: 18px;
+            height: 2.2cm;
         }
         
-        .mini-plate .mp-blue {
+        .big-plate .bp-blue {
             background: #0033a0;
             color: white;
-            font-size: 5px;
-            padding: 1px 2px;
+            font-size: 7px;
+            padding: 2px 3px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            line-height: 1;
-            min-width: 14px;
+            line-height: 1.1;
+            min-width: 18px;
         }
         
-        .mini-plate .mp-main {
+        .big-plate .bp-flag {
+            width: 12px;
+            height: 8px;
+            background: linear-gradient(to bottom, #239f40 33%, white 33%, white 66%, #da0000 66%);
+            border-radius: 1px;
+            margin-bottom: 2px;
+        }
+        
+        .big-plate .bp-main {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 8px;
+            font-size: 13px;
             font-weight: bold;
             color: #1a1a1a;
-            gap: 2px;
+            gap: 3px;
+            letter-spacing: 1px;
         }
         
-        .mini-plate .mp-code {
-            border-right: 1px solid #2c2c2c;
-            padding: 0 3px;
+        .big-plate .bp-code {
+            border-right: 1.5px solid #2c2c2c;
+            padding: 0 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 8px;
+            font-size: 13px;
             font-weight: bold;
             color: #1a1a1a;
-            min-width: 14px;
+            min-width: 20px;
         }
         
-        /* بخش اطلاعات */
-        .info-section {
+        /* برچسب مجاز زیر پلاک */
+        .status-under-plate {
+            text-align: center;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .status-under-plate.active {
+            background: #28a745;
+        }
+        
+        .status-under-plate.expired {
+            background: #e74c3c;
+        }
+        
+        /* بخش سمت راست: اطلاعات */
+        .right-section {
             flex: 1;
             font-size: 9px;
             line-height: 1.4;
@@ -177,12 +182,25 @@
         
         .driver-name {
             font-weight: bold;
-            font-size: 11px;
+            font-size: 13px;
             color: #1e1e2e;
             margin-bottom: 2px;
             border-bottom: 1.5px solid #f39c12;
             padding-bottom: 2px;
             text-align: center;
+        }
+        
+        .national-id {
+            font-size: 10px;
+            text-align: center;
+            margin-bottom: 2px;
+            color: #555;
+        }
+        
+        .national-id strong {
+            color: #1e1e2e;
+            direction: ltr;
+            display: inline-block;
         }
         
         /* ستون عمودی نوع/رنگ/پلاک */
@@ -200,7 +218,7 @@
         .vehicle-info-row {
             display: flex;
             justify-content: space-between;
-            font-size: 8px;
+            font-size: 9px;
         }
         
         .vehicle-info-row .label {
@@ -223,7 +241,7 @@
         .info-item {
             display: flex;
             gap: 2px;
-            font-size: 8px;
+            font-size: 9px;
             align-items: baseline;
         }
         
@@ -237,7 +255,7 @@
         }
         
         .info-value.small {
-            font-size: 7px;
+            font-size: 8px;
         }
         
         .full-width {
@@ -262,7 +280,7 @@
         }
         
         .issue-date {
-            font-size: 7px;
+            font-size: 8px;
         }
         
         .issue-date strong {
@@ -270,27 +288,11 @@
         }
         
         .validity {
-            font-size: 7px;
+            font-size: 8px;
         }
         
         .validity strong {
             color: #28a745;
-        }
-        
-        .status-badge {
-            font-size: 7px;
-            padding: 1px 5px;
-            border-radius: 3px;
-            color: white;
-            font-weight: bold;
-        }
-        
-        .status-badge.active {
-            background: #28a745;
-        }
-        
-        .status-badge.expired {
-            background: #e74c3c;
         }
         
         /* مسئول حفاظت فیزیکی */
@@ -324,27 +326,24 @@
             white-space: nowrap;
         }
         
-        /* توضیحات پایین کارت */
-        .description-box {
-            width: 10cm;
-            margin-top: 8px;
-            background: white;
-            border: 1.5px solid #1e1e2e;
-            border-radius: 6px;
-            padding: 6px 10px;
-            font-size: 10px;
-            line-height: 1.6;
+        /* توضیحات داخل کارت */
+        .description-inside {
+            margin-top: 2px;
+            padding: 2px 4px;
+            background: #fff9e6;
+            border: 1px solid #f39c12;
+            border-radius: 3px;
+            font-size: 8px;
+            line-height: 1.4;
             color: #333;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-height: 1.5cm;
+            overflow: hidden;
         }
         
-        .description-box .desc-title {
+        .description-inside .desc-title {
             font-weight: bold;
             color: #1e1e2e;
-            margin-bottom: 3px;
-            font-size: 11px;
-            border-bottom: 1px solid #f39c12;
-            padding-bottom: 2px;
+            font-size: 8px;
         }
         
         /* استایل چاپ */
@@ -366,14 +365,6 @@
                 color-adjust: exact;
             }
             
-            .description-box {
-                box-shadow: none;
-                border: 1.5px solid #000;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                color-adjust: exact;
-            }
-            
             @page {
                 size: auto;
                 margin: 10mm;
@@ -383,7 +374,7 @@
 </head>
 <body>
     <div class="print-controls">
-        <button onclick="window.print()">🖨️ چاپ کارت</button>
+        <button onclick="window.print()">️ چاپ کارت</button>
         <button onclick="window.close()">بستن</button>
     </div>
     
@@ -398,31 +389,49 @@
         </div>
         
         <div class="card-body">
-            <!-- بخش عکس -->
-            <div class="photo-section">
+            <!-- بخش سمت چپ: پلاک بزرگ + مجاز -->
+            <div class="left-section">
                 {% if vehicle.photo_path %}
                 <img src="{{ url_for('uploaded_file', filename=vehicle.photo_path.split('/')[-1], _external=True) }}" 
                      alt="عکس"
-                     class="photo">
+                     style="width: 2.6cm; height: 2.8cm; border-radius: 4px; object-fit: cover; border: 1.5px solid #f39c12;">
                 {% else %}
-                <div class="photo-placeholder"></div>
+                <div style="width: 2.6cm; height: 2.8cm; border-radius: 4px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #888; border: 1.5px dashed #ccc;">
+                    👤
+                </div>
                 {% endif %}
                 
-                <!-- پلاک کوچک با طراحی واقعی -->
-                <div class="mini-plate">
-                    <div class="mp-blue">IR</div>
-                    <div class="mp-main">
+                <!-- پلاک بزرگ -->
+                <div class="big-plate">
+                    <div class="bp-blue">
+                        <div class="bp-flag"></div>
+                        <div>IR</div>
+                    </div>
+                    <div class="bp-main">
                         <span>{{ vehicle.plate_1 }}</span>
                         <span>{{ vehicle.plate_2 }}</span>
                         <span>{{ vehicle.plate_3 }}</span>
                     </div>
-                    <div class="mp-code">{{ vehicle.plate_4 }}</div>
+                    <div class="bp-code">{{ vehicle.plate_4 }}</div>
                 </div>
+                
+                <!-- برچسب مجاز زیر پلاک -->
+                {% if vehicle.is_expired() %}
+                <div class="status-under-plate expired">منقضی</div>
+                {% else %}
+                <div class="status-under-plate active">مجاز</div>
+                {% endif %}
             </div>
             
-            <!-- بخش اطلاعات -->
-            <div class="info-section">
+            <!-- بخش سمت راست: اطلاعات -->
+            <div class="right-section">
                 <div class="driver-name">{{ vehicle.driver_name }}</div>
+                
+                {% if vehicle.national_id %}
+                <div class="national-id">
+                    کد ملی: <strong>{{ vehicle.national_id }}</strong>
+                </div>
+                {% endif %}
                 
                 <!-- ستون عمودی نوع/رنگ/پلاک -->
                 <div class="vehicle-info-column">
@@ -436,19 +445,12 @@
                     </div>
                     <div class="vehicle-info-row">
                         <span class="label">پلاک:</span>
-                        <span class="value" style="direction: ltr; font-size: 7px;">{{ vehicle.plate_1 }} {{ vehicle.plate_2 }} {{ vehicle.plate_3 }} | {{ vehicle.plate_4 }}</span>
+                        <span class="value" style="direction: ltr; font-size: 8px;">{{ vehicle.plate_1 }} {{ vehicle.plate_2 }} {{ vehicle.plate_3 }} | {{ vehicle.plate_4 }}</span>
                     </div>
                 </div>
                 
                 <!-- گرید اطلاعات -->
                 <div class="info-grid">
-                    {% if vehicle.national_id %}
-                    <div class="info-item">
-                        <span class="info-label">کدملی:</span>
-                        <span class="info-value">{{ vehicle.national_id }}</span>
-                    </div>
-                    {% endif %}
-                    
                     {% if vehicle.position %}
                     <div class="info-item">
                         <span class="info-label">سمت:</span>
@@ -492,6 +494,13 @@
                     {% endif %}
                 </div>
                 
+                <!-- توضیحات داخل کارت -->
+                {% if vehicle.description %}
+                <div class="description-inside">
+                    <span class="desc-title">📝 </span>{{ vehicle.description[:80] }}{% if vehicle.description|length > 80 %}...{% endif %}
+                </div>
+                {% endif %}
+                
                 <!-- فوتر کارت -->
                 <div class="card-footer">
                     <div class="footer-right">
@@ -504,11 +513,6 @@
                             <strong>{{ vehicle.get_shamsi_validity() }}</strong>
                         </div>
                     </div>
-                    {% if vehicle.is_expired() %}
-                    <div class="status-badge expired">منقضی</div>
-                    {% else %}
-                    <div class="status-badge active">مجاز</div>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -519,14 +523,6 @@
             <span class="line"></span>
         </div>
     </div>
-    
-    <!-- توضیحات پایین کارت -->
-    {% if vehicle.description %}
-    <div class="description-box">
-        <div class="desc-title">📝 توضیحات:</div>
-        <div>{{ vehicle.description }}</div>
-    </div>
-    {% endif %}
     
     <script>
         // تبدیل تاریخ میلادی به شمسی
@@ -550,7 +546,7 @@
             return [jy, jm, jd];
         }
         
-        // نمایش تاریخ صدور (تاریخ امروز مرورگر کاربر)
+        // نمایش تاریخ صدور
         window.onload = function() {
             var now = new Date();
             var j = toJalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
