@@ -1,44 +1,67 @@
 {% extends "base.html" %}
-{% block title %}صفحه اصلی{% endblock %}
-{% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3>اطلاعیه‌های فعال</h3>
-    {% if current_user.is_admin or current_user.can_add_notification %}
-    <a href="{{ url_for('add_item') }}" class="btn btn-primary">
-        <i class="fas fa-plus"></i> افزودن اطلاعیه جدید
-    </a>
-    {% endif %}
-</div>
 
-{% if notifications %}
-    <div class="row">
-        {% for notification in notifications %}
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm {% if notification.is_important %}border-danger border-2{% endif %}">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        {% if notification.is_important %}
-                        <span class="badge bg-danger ms-2">مهم</span>
-                        {% endif %}
-                        {{ notification.title }}
-                    </h5>
-                    <p class="card-text">{{ notification.description[:150] }}{% if notification.description|length > 150 %}...{% endif %}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
-                            انقضا: {{ notification.get_shamsi_expiry() }}
-                        </small>
-                        <a href="{{ url_for('view_item', item_id=notification.id) }}" class="btn btn-sm btn-outline-primary">
-                            مشاهده جزئیات
-                        </a>
+{% block title %}صفحه اصلی{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h4 class="mb-3 text-center">اطلاعیه‌های فعال</h4>
+    
+    {% if notifications %}
+        <div class="row">
+            {% for notification in notifications %}
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <h5 class="card-title mb-0">
+                                <a href="{{ url_for('view_item', item_id=notification.id) }}" class="text-decoration-none text-dark">
+                                    {% if notification.is_important %}
+                                    <span class="badge bg-danger me-2">مهم</span>
+                                    {% endif %}
+                                    {{ notification.title }}
+                                </a>
+                            </h5>
+                            
+                            <!-- دکمه‌های مدیریتی فقط برای مدیر -->
+                            {% if current_user.is_admin %}
+                            <div class="dropdown">
+                                <button class="btn btn-link btn-sm text-muted" type="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="{{ url_for('edit_item', item_id=notification.id) }}">ویرایش</a></li>
+                                    <li><a class="dropdown-item" href="{{ url_for('toggle_important', item_id=notification.id) }}">
+                                        {% if notification.is_important %} خارج از حالت مهم {% else %} علامت‌گذاری به عنوان مهم {% endif %}
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="{{ url_for('archive_item', item_id=notification.id) }}">بایگانی</a></li>
+                                    <li><a class="dropdown-item text-danger" href="{{ url_for('delete_item', item_id=notification.id) }}" onclick="return confirm('آیا از حذف این مورد اطمینان دارید؟')">حذف</a></li>
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mt-2 text-end">
+                            <small class="text-muted">
+                                {% set days_left = (notification.expiry_date - datetime.now().date()).days %}
+                                {% if days_left > 0 %}
+                                    <span class="badge bg-success">{{ days_left }} روز مانده</span>
+                                {% elif days_left == 0 %}
+                                    <span class="badge bg-warning text-dark">امروز آخرین روز است</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">منقضی شده</span>
+                                {% endif %}
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-{% else %}
-    <div class="alert alert-info text-center">
-        <i class="fas fa-info-circle"></i> هیچ اطلاعیه فعالی وجود ندارد.
-    </div>
-{% endif %}
+    {% else %}
+        <div class="alert alert-info text-center">
+            هیچ اطلاعیه فعالی وجود ندارد
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
