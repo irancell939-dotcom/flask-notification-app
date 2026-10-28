@@ -11,7 +11,6 @@
                             {{ vehicle.driver_name }}
                         </div>
                         
-                        <!-- پلاک ایرانی -->
                         <div class="iranian-plate small">
                             <div class="plate-blue">
                                 <div class="plate-flag"></div>
@@ -33,7 +32,7 @@
             <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
                 {% if vehicle.entrance_gate %}
                     <span style="background: #e3f2fd; color: #0d47a1; padding: 4px 10px; border-radius: 8px; font-size: 12px;">
-                         {{ vehicle.entrance_gate }}
+                        🚪 {{ vehicle.entrance_gate }}
                     </span>
                 {% endif %}
                 
