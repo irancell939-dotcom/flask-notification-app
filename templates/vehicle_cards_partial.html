@@ -6,18 +6,16 @@
                     {% if vehicle.violations_count > 0 %}
                         <span class="badge-important" style="background: #e67e22;">{{ vehicle.violations_count }} تخلف</span>
                     {% endif %}
-                    <div>
-                        <div class="card-title" style="font-size: 16px; margin-bottom: 5px;">
+                    <div style="flex: 1;">
+                        <div class="card-title" style="font-size: 16px; margin-bottom: 8px;">
                             {{ vehicle.driver_name }}
                         </div>
-                        <div style="font-size: 18px; font-weight: bold; color: #2c3e50; direction: ltr; text-align: right;">
-                            IR {{ vehicle.plate_4 }} {{ vehicle.plate_3 }} {{ vehicle.plate_2 }} {{ vehicle.plate_1 }}
-                        </div>
+                        {% include 'plate_component.html' with context %}
                     </div>
                 </div>
             </div>
 
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
                 {% if vehicle.entrance_gate %}
                     <span style="background: #e3f2fd; color: #0d47a1; padding: 4px 10px; border-radius: 8px; font-size: 12px;">
                         🚪 {{ vehicle.entrance_gate }}
