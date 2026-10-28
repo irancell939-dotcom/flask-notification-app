@@ -3,88 +3,99 @@
 {% block title %}{{ notification.title }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-sm mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">
-                    {% if notification.is_important %}
-                    <span class="badge bg-danger">مهم</span>
-                    {% endif %}
-                    {{ notification.title }}
-                </h4>
-                <a href="{{ url_for('index') }}" class="btn btn-sm btn-secondary">بازگشت</a>
-            </div>
-            <div class="card-body">
-                <p class="lead">{{ notification.description }}</p>
-                <hr>
-                <div class="row text-muted small">
-                    <div class="col-md-6">
-                        <strong>تاریخ درج:</strong>
-                        <span class="local-time" data-iso="{{ notification.get_iso_created() }}">
-                            {{ notification.get_iso_created() }}
-                        </span>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <strong>تاریخ انقضا:</strong> {{ notification.get_shamsi_expiry() }}
-                    </div>
-                </div>
-
-                {% if current_user.is_admin %}
-                <hr>
-                <div class="d-flex gap-2">
-                    <a href="{{ url_for('edit_item', item_id=notification.id) }}" class="btn btn-sm btn-primary">ویرایش</a>
-                    <a href="{{ url_for('toggle_important', item_id=notification.id) }}" class="btn btn-sm btn-warning">
-                        {% if notification.is_important %}خارج از حالت مهم{% else %}علامت‌گذاری به عنوان مهم{% endif %}
-                    </a>
-                    <a href="{{ url_for('archive_item', item_id=notification.id) }}" class="btn btn-sm btn-secondary">بایگانی</a>
-                    <a href="{{ url_for('delete_item', item_id=notification.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('آیا از حذف اطمینان دارید؟')">حذف</a>
-                </div>
-                {% endif %}
-            </div>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <a href="{{ url_for('index') }}" style="background: #6c757d; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
+        بازگشت
+    </a>
+    {% if current_user.is_admin %}
+        <div style="display: flex; gap: 8px;">
+            <a href="{{ url_for('edit_item', item_id=notification.id) }}" style="background: #f39c12; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
+                ویرایش
+            </a>
+            <a href="{{ url_for('toggle_important', item_id=notification.id) }}" style="background: {{ '#e67e22' if notification.is_important else '#3498db' }}; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
+                {% if notification.is_important %}خارج از حالت مهم{% else %}علامت‌گذاری مهم{% endif %}
+            </a>
+            <a href="{{ url_for('archive_item', item_id=notification.id) }}" style="background: #6c757d; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
+                بایگانی
+            </a>
+            <a href="{{ url_for('delete_item', item_id=notification.id) }}" style="background: #e74c3c; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;" onclick="return confirm('آیا از حذف مطمئن هستید؟')">
+                حذف
+            </a>
         </div>
+    {% endif %}
+</div>
 
-        <!-- کادر نظرات - پس‌زمینه سبز روشن -->
-        <div class="card shadow-sm" style="background-color: #e8f5e9; border: 1px solid #a5d6a7;">
-            <div class="card-header bg-success text-white">
-                <strong><i class="fas fa-comments"></i> نظرات ({{ notification.comments|length }})</strong>
-            </div>
-            <div class="card-body">
-                {% for comment in notification.comments|sort(attribute='created_at', reverse=true) %}
-                <div class="border-bottom pb-3 mb-3">
-                    <div class="d-flex justify-content-between">
-                        <strong class="text-primary">
-                            {{ comment.author.full_name if comment.author.full_name else comment.author.username }}
-                            {% if comment.author.is_admin %}
-                            <span class="badge bg-warning text-dark ms-1">مدیر</span>
-                            {% endif %}
-                        </strong>
-                        <small class="text-muted local-time" data-iso="{{ comment.get_iso_created() }}">
-                            {{ comment.get_iso_created() }}
-                        </small>
-                    </div>
-                    <p class="mt-2 mb-1">{{ comment.text }}</p>
-                    {% if current_user.is_admin or comment.user_id == current_user.id %}
-                    <a href="{{ url_for('delete_comment', comment_id=comment.id) }}"
-                       class="btn btn-sm btn-outline-danger"
-                       onclick="return confirm('حذف نظر؟')">حذف</a>
-                    {% endif %}
-                </div>
-                {% else %}
-                <p class="text-muted text-center mb-3">هنوز نظری ثبت نشده است.</p>
-                {% endfor %}
-
-                {% if current_user.is_authenticated %}
-                <hr>
-                <form method="POST" action="{{ url_for('add_comment', item_id=notification.id) }}">
-                    <div class="mb-2">
-                        <textarea name="text" class="form-control" rows="3" placeholder="نظر خود را بنویسید..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-success btn-sm">ارسال نظر</button>
-                </form>
-                {% endif %}
-            </div>
+<!-- کارت اطلاعیه -->
+<div class="notification-card">
+    <div class="card-top">
+        <div class="card-title-area">
+            {% if notification.is_important %}
+                <span class="badge-important">مهم</span>
+            {% endif %}
+            <h1 class="card-title" style="font-size: 20px;">{{ notification.title }}</h1>
         </div>
     </div>
+    
+    <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; line-height: 1.8; color: #333;">
+        {{ notification.description }}
+    </div>
+    
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+        <span style="background: #e3f2fd; color: #0d47a1; padding: 6px 12px; border-radius: 8px; font-size: 13px;">
+            تاریخ درج: {{ notification.get_iso_created() }}
+        </span>
+        <span style="background: #e8f5e9; color: #1b5e20; padding: 6px 12px; border-radius: 8px; font-size: 13px;">
+            تاریخ انقضا: {{ notification.get_shamsi_expiry() }}
+        </span>
+    </div>
 </div>
+
+<!-- نظرات -->
+<div class="notification-card" style="margin-top: 20px;">
+    <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px;">
+        نظرات ({{ notification.comments|length }})
+    </h3>
+    
+    {% for comment in notification.comments|sort(attribute='created_at', reverse=true) %}
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid #3498db;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-weight: bold; color: #2c3e50; font-size: 14px;">
+                        {{ comment.author.full_name if comment.author.full_name else comment.author.username }}
+                    </span>
+                    {% if comment.author.is_admin %}
+                        <span class="badge-important" style="background: #f39c12; font-size: 11px; padding: 2px 8px;">مدیر</span>
+                    {% endif %}
+                </div>
+                <span style="color: #888; font-size: 12px;">{{ comment.get_iso_created() }}</span>
+            </div>
+            <p style="margin: 0; color: #555; line-height: 1.6;">{{ comment.text }}</p>
+            
+            {% if current_user.is_admin or comment.user_id == current_user.id %}
+                <div style="margin-top: 10px; text-align: left;">
+                    <a href="{{ url_for('delete_comment', comment_id=comment.id) }}" style="color: #e74c3c; font-size: 13px; text-decoration: none;" onclick="return confirm('آیا از حذف این نظر مطمئن هستید؟')">
+                        حذف نظر
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <div class="empty-state" style="padding: 20px;">
+            هنوز نظری ثبت نشده است.
+        </div>
+    {% endfor %}
+</div>
+
+<!-- فرم ارسال نظر -->
+{% if current_user.is_authenticated %}
+<div class="notification-card" style="margin-top: 20px;">
+    <h3 style="margin-bottom: 15px; color: #2c3e50;">ارسال نظر</h3>
+    <form method="POST" action="{{ url_for('add_comment', item_id=notification.id) }}">
+        <textarea name="text" placeholder="نظر خود را بنویسید..." required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: vertical; min-height: 80px; font-family: Tahoma;"></textarea>
+        <button type="submit" style="width: 100%; background: #3498db; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px;">
+            ارسال نظر
+        </button>
+    </form>
+</div>
+{% endif %}
 {% endblock %}
