@@ -21,7 +21,6 @@
             overflow-x: hidden;
         }
 
-        /* ========== هدر ========== */
         .app-header {
             background-color: #1e1e2e;
             color: white;
@@ -77,7 +76,6 @@
             width: 40px;
         }
 
-        /* ========== منوی کشویی ========== */
         .sidebar-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -169,7 +167,6 @@
             padding-top: 20px;
         }
 
-        /* ========== محتوای اصلی ========== */
         .main-content {
             padding: 20px 15px;
             max-width: 800px;
@@ -184,7 +181,6 @@
             margin-bottom: 20px;
         }
 
-        /* ========== کارت ========== */
         .notification-card {
             background: white;
             border-radius: 14px;
@@ -293,7 +289,6 @@
             color: #856404;
         }
 
-        /* ========== پیام‌های فلش ========== */
         .flash-messages {
             max-width: 800px;
             margin: 0 auto 15px;
@@ -323,7 +318,6 @@
             color: #0c5460;
         }
 
-        /* ========== حالت خالی ========== */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
@@ -331,7 +325,6 @@
             font-size: 16px;
         }
 
-        /* ========== پلاک خودرو ایرانی ========== */
         .iranian-plate {
             display: inline-flex;
             align-items: stretch;
@@ -458,7 +451,7 @@
         }
 
         .iranian-plate.large .plate-blue {
-            min-width: 60px;
+            min-width: 40px;
             padding: 6px 8px;
         }
 
@@ -488,7 +481,6 @@
             font-size: 32px;
         }
 
-        /* ========== فوتر ========== */
         .app-footer {
             text-align: center;
             padding: 20px 15px;
@@ -504,7 +496,6 @@
             margin-top: 5px;
         }
 
-        /* ========== ریسپانسیو ========== */
         @media (min-width: 769px) {
             .main-content {
                 padding: 30px 20px;
@@ -517,7 +508,6 @@
 </head>
 <body>
 
-    <!-- هدر -->
     <header class="app-header">
         <div class="header-top">
             <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="منو">☰</button>
@@ -526,13 +516,11 @@
             </div>
             <div class="header-spacer"></div>
         </div>
-        <div class="header-subtitle">1405  </div>
+        <div class="header-subtitle">برنامه نویس: محمدعمر خاوران</div>
     </header>
 
-    <!-- Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-    <!-- منوی کشویی -->
     {% if current_user.is_authenticated %}
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
@@ -544,6 +532,16 @@
                     <span class="sidebar-role user">کاربر</span>
                 {% endif %}
             </div>
+            
+            {% if current_user.is_admin and db_size %}
+            <div style="margin-top: 12px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 8px; font-size: 12px; color: #b0b0c0;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="font-size: 14px;">💾</span>
+                    <span>حجم دیتابیس:</span>
+                    <span style="color: #f39c12; font-weight: bold; margin-right: auto;">{{ db_size }}</span>
+                </div>
+            </div>
+            {% endif %}
         </div>
         <ul class="sidebar-menu">
             <li><a href="{{ url_for('index') }}">صفحه اصلی</a></li>
@@ -564,7 +562,6 @@
     </aside>
     {% endif %}
 
-    <!-- پیام‌ها -->
     <div class="flash-messages">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -575,20 +572,16 @@
         {% endwith %}
     </div>
 
-    <!-- محتوای صفحه -->
     <div class="main-content">
         {% block content %}{% endblock %}
     </div>
 
-    <!-- فوتر -->
     <footer class="app-footer">
-        <div>© ۱۴۰ - سامانه اطلاع رسانی امین</div>
+        <div>© ۱۴۰۵ - سامانه اطلاع رسانی امین</div>
         <div class="programmer">برنامه نویس: محمدعمر خاوران</div>
     </footer>
 
-    <!-- اسکریپت تبدیل تاریخ شمسی (مستقیماً داخل base.html) -->
     <script>
-        // تبدیل تاریخ میلادی به شمسی
         function toJalali(gy, gm, gd) {
             var g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
             var jy = (gy <= 1600) ? 0 : 979;
@@ -609,19 +602,15 @@
             return [jy, jm, jd];
         }
 
-        // فرمت کردن تاریخ شمسی با ساعت
         function formatJalaliDate(isoString) {
             if (!isoString) return '-';
             try {
-                // حذف حرف Z آخر برای سازگاری بهتر
                 var cleanIso = isoString.replace('Z', '');
                 var d = new Date(cleanIso);
                 if (isNaN(d.getTime())) return isoString;
-                
                 var j = toJalali(d.getFullYear(), d.getMonth() + 1, d.getDate());
                 var h = d.getHours().toString().padStart(2, '0');
                 var m = d.getMinutes().toString().padStart(2, '0');
-                
                 return j[0] + '/' + j[1].toString().padStart(2, '0') + '/' + j[2].toString().padStart(2, '0')
                      + ' - ' + h + ':' + m;
             } catch(e) {
@@ -629,7 +618,6 @@
             }
         }
 
-        // تبدیل تمام عناصر با کلاس jalali-date
         function convertAllDates() {
             var elements = document.querySelectorAll('.jalali-date');
             for (var i = 0; i < elements.length; i++) {
@@ -641,11 +629,9 @@
             }
         }
 
-        // اجرای خودکار پس از بارگذاری کامل صفحه
         window.addEventListener('load', convertAllDates);
         document.addEventListener('DOMContentLoaded', convertAllDates);
 
-        // توابع منو
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
             document.getElementById('sidebarOverlay').classList.toggle('active');
