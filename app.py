@@ -2,27 +2,23 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Notification, Comment, Vehicle, Violation
 from config import Config
-from datetime import datetime
+from datetime import datetime, timedelta
 import jdatetime
 import os
 import csv
 import io
 from werkzeug.utils import secure_filename
+from PIL import Image
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, instance_relative_config=False)
 app.config.from_object(Config)
 app.instance_path = os.path.join(BASE_DIR, 'instance')
 
-# مسیر پوشه آپلود عکس‌ها
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads', 'vehicles')
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
+# ایجاد پوشه‌های لازم
 try:
     os.makedirs(app.instance_path, exist_ok=True)
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 except Exception as e:
     print(f"Warning: Could not create folders: {e}")
 
@@ -42,6 +38,7 @@ def inject_now():
 
 @app.context_processor
 def inject_db_size():
+    """محاسبه حجم دیتابیس برای نمایش به مدیر"""
     db_size = None
     if current_user.is_authenticated and current_user.is_admin:
         try:
@@ -78,19 +75,93 @@ def inject_db_size():
     return {'db_size': db_size}
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    """بررسی فرمت مجاز فایل"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+
+def compress_image(file, max_size_kb=25):
+    """
+    فشرده‌سازی خودکار عکس تا رسیدن به کمترین حد قابل نمایش (پیش‌فرض 25 کیلوبایت)
+    """
+    try:
+        # ۱. باز کردن عکس
+        img = Image.open(file)
+        
+        # ۲. تبدیل به RGB (حذف کانال شفافیت برای کاهش حجم)
+        if img.mode in ('RGBA', 'P', 'LA'):
+            img = img.convert('RGB')
+        
+        # ۳. کوچک کردن ابعاد (حداکثر ۳۰۰ پیکسل برای هر طرف)
+        max_dimension = 300
+        if img.width > max_dimension or img.height > max_dimension:
+            img.thumbnail((max_dimension, max_dimension), Image.Resampling.LANCZOS)
+        
+        output = io.BytesIO()
+        quality = 50  # شروع با کیفیت متوسط
+        
+        # ۴. حلقه فشرده‌سازی تا رسیدن به حجم هدف
+        while quality > 20:  # کیفیت را پایین‌تر از ۲۰ نبر چون تصویر خراب می‌شود
+            output.seek(0)
+            output.truncate()
+            
+            # ذخیره به فرمت JPEG با بهینه‌سازی
+            img.save(output, format='JPEG', quality=quality, optimize=True)
+            
+            size_kb = output.tell() / 1024
+            
+            if size_kb <= max_size_kb:
+                break
+            
+            quality -= 10  # کاهش پله‌ای کیفیت
+        
+        # ۵. اگر هنوز حجم بالا بود، ابعاد را باز هم کوچک‌تر کن
+        if size_kb > max_size_kb:
+            scale = 0.7
+            while size_kb > max_size_kb and scale > 0.4:
+                new_size = (int(img.width * scale), int(img.height * scale))
+                img_resized = img.resize(new_size, Image.Resampling.LANCZOS)
+                
+                output.seek(0)
+                output.truncate()
+                img_resized.save(output, format='JPEG', quality=30, optimize=True)
+                
+                size_kb = output.tell() / 1024
+                scale -= 0.1
+        
+        output.seek(0)
+        return output
+        
+    except Exception as e:
+        print(f"خطا در فشرده‌سازی عکس: {e}")
+        return None
 
 def save_vehicle_photo(file, national_id):
+    """ذخیره عکس خودرو با فشرده‌سازی حداکثری"""
     if file and allowed_file(file.filename):
-        ext = file.filename.rsplit('.', 1)[1].lower()
-        filename = f"{national_id}.{ext}"
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
-        return f"uploads/vehicles/{filename}"
+        # فراخوانی تابع فشرده‌سازی با هدف ۵ کیلوبایت
+        compressed_image = compress_image(file, max_size_kb=25)
+        
+        if compressed_image:
+            filename = f"{national_id}.jpg"
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            
+            with open(filepath, 'wb') as f:
+                f.write(compressed_image.read())
+            
+            return f"uploads/vehicles/{filename}"
+        else:
+            # اگر خطا داد، عکس اصلی را با فرمت jpg ذخیره کن
+            filename = f"{national_id}.jpg"
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.seek(0)
+            # تبدیل ساده در صورت شکست فشرده‌سازی
+            img = Image.open(file).convert('RGB')
+            img.save(filepath, format='JPEG', quality=50, optimize=True)
+            return f"uploads/vehicles/{filename}"
     return None
 
 @app.route('/uploads/vehicles/<filename>')
 def uploaded_file(filename):
+    """سرویس‌دهی فایل‌های آپلود شده"""
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # ========== اطلاعیه‌ها ==========
@@ -392,6 +463,7 @@ def add_vehicle():
             db.session.add(vehicle)
             db.session.flush()
             
+            # آپلود و فشرده‌سازی عکس
             photo = request.files.get('photo')
             if photo and photo.filename and national_id:
                 photo_path = save_vehicle_photo(photo, national_id)
@@ -449,13 +521,16 @@ def edit_vehicle(id):
             vehicle.referrer = request.form.get('referrer')
             vehicle.archive_location = request.form.get('archive_location')
             
+            # آپلود عکس جدید
             photo = request.files.get('photo')
             if photo and photo.filename:
+                # حذف عکس قبلی
                 if vehicle.photo_path:
                     old_path = os.path.join(BASE_DIR, vehicle.photo_path)
                     if os.path.exists(old_path):
                         os.remove(old_path)
                 
+                # ذخیره عکس جدید
                 national_id = vehicle.national_id or str(vehicle.id)
                 photo_path = save_vehicle_photo(photo, national_id)
                 if photo_path:
@@ -479,6 +554,7 @@ def delete_vehicle(id):
     
     vehicle = Vehicle.query.get_or_404(id)
     
+    # حذف عکس خودرو
     if vehicle.photo_path:
         photo_full_path = os.path.join(BASE_DIR, vehicle.photo_path)
         if os.path.exists(photo_full_path):
