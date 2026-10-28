@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>{% block title %}سیستم اطلاع‌رسانی{% endblock %}</title>
+    <title>{% block title %}سامانه اطلاع رسانی امین{% endblock %}</title>
     <style>
         * {
             box-sizing: border-box;
@@ -25,21 +25,26 @@
         .app-header {
             background-color: #1e1e2e;
             color: white;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 12px 15px;
             position: sticky;
             top: 0;
             z-index: 100;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
         .header-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             flex: 1;
             text-align: center;
+            color: white;
         }
 
         .header-title a {
@@ -47,13 +52,20 @@
             text-decoration: none;
         }
 
+        .header-subtitle {
+            text-align: center;
+            font-size: 11px;
+            color: #f39c12;
+            margin-top: 2px;
+        }
+
         .hamburger-btn {
             background: none;
             border: 2px solid rgba(255,255,255,0.3);
             color: white;
-            font-size: 22px;
-            width: 44px;
-            height: 44px;
+            font-size: 20px;
+            width: 40px;
+            height: 40px;
             border-radius: 8px;
             cursor: pointer;
             display: flex;
@@ -61,12 +73,8 @@
             justify-content: center;
         }
 
-        .hamburger-btn:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
         .header-spacer {
-            width: 44px;
+            width: 40px;
         }
 
         /* ========== منوی کشویی ========== */
@@ -176,7 +184,7 @@
             margin-bottom: 20px;
         }
 
-        /* ========== کارت اطلاعیه ========== */
+        /* ========== کارت ========== */
         .notification-card {
             background: white;
             border-radius: 14px;
@@ -406,7 +414,6 @@
             color: #1a1a1a;
         }
 
-        /* نسخه کوچک برای کارت‌ها */
         .iranian-plate.small {
             min-height: 40px;
             border-width: 2px;
@@ -444,7 +451,6 @@
             font-size: 16px;
         }
 
-        /* نسخه بزرگ برای جزئیات */
         .iranian-plate.large {
             min-height: 75px;
             border-width: 4px;
@@ -482,6 +488,22 @@
             font-size: 32px;
         }
 
+        /* ========== فوتر ========== */
+        .app-footer {
+            text-align: center;
+            padding: 20px 15px;
+            color: #888;
+            font-size: 12px;
+            border-top: 1px solid #e0d8c8;
+            margin-top: 30px;
+        }
+
+        .app-footer .programmer {
+            color: #f39c12;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
         /* ========== ریسپانسیو ========== */
         @media (min-width: 769px) {
             .main-content {
@@ -497,11 +519,14 @@
 
     <!-- هدر -->
     <header class="app-header">
-        <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="منو">☰</button>
-        <div class="header-title">
-            <a href="{{ url_for('index') }}">سیستم اطلاع‌رسانی</a>
+        <div class="header-top">
+            <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="منو">☰</button>
+            <div class="header-title">
+                <a href="{{ url_for('index') }}">سامانه اطلاع رسانی امین</a>
+            </div>
+            <div class="header-spacer"></div>
         </div>
-        <div class="header-spacer"></div>
+        <div class="header-subtitle">برنامه نویس: محمدعمر خاوران</div>
     </header>
 
     <!-- Overlay -->
@@ -555,6 +580,13 @@
         {% block content %}{% endblock %}
     </div>
 
+    <!-- فوتر -->
+    <footer class="app-footer">
+        <div>© ۱۴۰۵ - سامانه اطلاع رسانی امین</div>
+        <div class="programmer">برنامه نویس: محمدعمر خاوران</div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/jalali.js') }}"></script>
     <script>
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
@@ -566,7 +598,6 @@
             if (el) el.classList.toggle('show');
         }
 
-        // بستن منو با کلید Escape
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 document.getElementById('sidebar').classList.remove('active');
