@@ -9,25 +9,53 @@
     <a href="{{ url_for('add_vehicle') }}" style="flex: 1; min-width: 140px; background: #28a745; color: white; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold;">
         + افزودن خودرو
     </a>
-    <a href="{{ url_for('import_vehicles_excel') }}" style="flex: 1; min-width: 140px; background: #17a2b8; color: white; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold;">
-        📊 ورود/خروج اکسل
+</div>
+
+<!-- دکمه‌های فیلتر مدیر -->
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+    <a href="{{ url_for('vehicles', filter='active') }}" 
+       style="background: {{ '#28a745' if active_filter == 'active' else 'white' }}; color: {{ 'white' if active_filter == 'active' else '#28a745' }}; padding: 12px 8px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px; border: 2px solid #28a745;">
+         مجاز به تردد<br>
+        <span style="font-size: 18px;">{{ active_count }}</span>
+    </a>
+    <a href="{{ url_for('vehicles', filter='expired') }}" 
+       style="background: {{ '#e74c3c' if active_filter == 'expired' else 'white' }}; color: {{ 'white' if active_filter == 'expired' else '#e74c3c' }}; padding: 12px 8px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px; border: 2px solid #e74c3c;">
+         منقضی شده<br>
+        <span style="font-size: 18px;">{{ expired_count }}</span>
+    </a>
+    <a href="{{ url_for('vehicles', filter='violation') }}" 
+       style="background: {{ '#f39c12' if active_filter == 'violation' else 'white' }}; color: {{ 'white' if active_filter == 'violation' else '#f39c12' }}; padding: 12px 8px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px; border: 2px solid #f39c12;">
+        ⚠️ دارای تخلف<br>
+        <span style="font-size: 18px;">{{ violation_count }}</span>
+    </a>
+</div>
+
+{% if active_filter %}
+<div style="text-align: center; margin-bottom: 15px;">
+    <a href="{{ url_for('vehicles') }}" style="background: #6c757d; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px;">
+        ✕ حذف فیلتر و نمایش همه
     </a>
 </div>
 {% endif %}
+{% endif %}
 
-<!-- آمار -->
+<!-- آمار کلی -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px;">
     <div style="background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
         <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ total_vehicles }}</div>
         <div style="font-size: 13px; color: #666; margin-top: 5px;">کل خودروها</div>
     </div>
     <div style="background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-        <div style="font-size: 24px; font-weight: bold; color: #28a745;">{{ active_vehicles }}</div>
+        <div style="font-size: 24px; font-weight: bold; color: #28a745;">{{ active_count }}</div>
         <div style="font-size: 13px; color: #666; margin-top: 5px;">مجاز به تردد</div>
     </div>
     <div style="background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-        <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">{{ expired_vehicles }}</div>
+        <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">{{ expired_count }}</div>
         <div style="font-size: 13px; color: #666; margin-top: 5px;">منقضی شده</div>
+    </div>
+    <div style="background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <div style="font-size: 24px; font-weight: bold; color: #f39c12;">{{ violation_count }}</div>
+        <div style="font-size: 13px; color: #666; margin-top: 5px;">دارای تخلف</div>
     </div>
 </div>
 
@@ -35,6 +63,9 @@
 <div style="background: white; padding: 18px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
     <h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 16px;">🔍 جستجوی پلاک و راننده</h3>
     <form method="GET" action="{{ url_for('vehicles') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
+        {% if active_filter %}
+        <input type="hidden" name="filter" value="{{ active_filter }}">
+        {% endif %}
         <input type="text" name="plate_1" value="{{ plate_1 }}" placeholder="دو رقم (چپ)" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
         <input type="text" name="plate_2" value="{{ plate_2 }}" placeholder="حرف" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
         <input type="text" name="plate_3" value="{{ plate_3 }}" placeholder="سه رقم" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
