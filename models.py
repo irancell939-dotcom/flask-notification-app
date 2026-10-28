@@ -26,6 +26,11 @@ class User(UserMixin, db.Model):
     def full_name(self):
         return f"{self.first_name or ''} {self.last_name or ''}".strip() or self.username
 
+    def get_iso_created(self):
+        if self.created_at:
+            return self.created_at.isoformat() + 'Z'
+        return ''
+
 
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -37,7 +42,6 @@ class Notification(db.Model):
     is_archived = db.Column(db.Boolean, default=False)
     is_important = db.Column(db.Boolean, default=False)
     is_approved = db.Column(db.Boolean, default=False)
-
     comments = db.relationship('Comment', backref='notification', lazy=True, cascade="all, delete-orphan")
 
     def is_expired(self):
@@ -60,7 +64,6 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     text = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
     author = db.relationship('User', backref='comments')
 
     def get_iso_created(self):
@@ -71,6 +74,12 @@ class Comment(db.Model):
 
 class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    
+    # فیلدهای جدید
+    national_id = db.Column(db.String(10), unique=True, nullable=True)  # شماره ملی
+    dormitory_status = db.Column(db.String(50), nullable=True)  # وضعیت خوابگاه
+    photo_path = db.Column(db.String(200), nullable=True)  # مسیر عکس
+    
     plate_1 = db.Column(db.String(2), nullable=False)
     plate_2 = db.Column(db.String(1), nullable=False)
     plate_3 = db.Column(db.String(3), nullable=False)
@@ -120,7 +129,6 @@ class Violation(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=True)
     description = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
     reporter = db.relationship('User', backref='violations_reported')
 
     def get_iso_created(self):
