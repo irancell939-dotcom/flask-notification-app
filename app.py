@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Notification, Comment, Vehicle, Violation
 from config import Config
-from datetime import datetime
+from datetime import datetime, timedelta
 import jdatetime
 import os
 import csv
@@ -31,6 +31,45 @@ def load_user(user_id):
 @app.context_processor
 def inject_now():
     return {'datetime': datetime}
+
+@app.context_processor
+def inject_db_size():
+    """محاسبه حجم دیتابیس برای نمایش به مدیر"""
+    db_size = None
+    if current_user.is_authenticated and current_user.is_admin:
+        try:
+            db_uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
+            if 'sqlite' in db_uri:
+                db_path = db_uri.replace('sqlite:///', '')
+                if db_path.startswith('/'):
+                    db_path = db_path[1:]
+                if os.path.exists(db_path):
+                    size_bytes = os.path.getsize(db_path)
+                    if size_bytes < 1024:
+                        db_size = f"{size_bytes} B"
+                    elif size_bytes < 1024 * 1024:
+                        db_size = f"{size_bytes / 1024:.2f} KB"
+                    elif size_bytes < 1024 * 1024 * 1024:
+                        db_size = f"{size_bytes / (1024 * 1024):.2f} MB"
+                    else:
+                        db_size = f"{size_bytes / (1024 * 1024 * 1024):.2f} GB"
+            elif 'postgresql' in db_uri or 'postgres' in db_uri:
+                from sqlalchemy import text
+                with db.engine.connect() as conn:
+                    result = conn.execute(text("SELECT pg_database_size(current_database())"))
+                    size_bytes = result.scalar()
+                    if size_bytes < 1024:
+                        db_size = f"{size_bytes} B"
+                    elif size_bytes < 1024 * 1024:
+                        db_size = f"{size_bytes / 1024:.2f} KB"
+                    elif size_bytes < 1024 * 1024 * 1024:
+                        db_size = f"{size_bytes / (1024 * 1024):.2f} MB"
+                    else:
+                        db_size = f"{size_bytes / (1024 * 1024 * 1024):.2f} GB"
+        except Exception as e:
+            db_size = "خطا"
+    
+    return {'db_size': db_size}
 
 # ========== اطلاعیه‌ها ==========
 @app.route('/')
@@ -392,8 +431,6 @@ def export_vehicles_excel():
     
     vehicles = Vehicle.query.order_by(Vehicle.created_at.desc()).all()
     output = io.StringIO()
-    
-    # BOM برای نمایش صحیح فارسی در اکسل
     output.write('\ufeff')
     
     fieldnames = [
@@ -435,7 +472,6 @@ def export_vehicles_excel():
         headers={'Content-Disposition': f'attachment; filename={filename}'}
     )
 
-
 @app.route('/vehicles/import_excel', methods=['GET', 'POST'])
 @login_required
 def import_vehicles_excel():
@@ -454,7 +490,6 @@ def import_vehicles_excel():
             return redirect(url_for('import_vehicles_excel'))
         
         try:
-            # خواندن محتوا - پشتیبانی از UTF-8 با BOM
             content = file.stream.read().decode('utf-8-sig')
             reader = csv.DictReader(io.StringIO(content))
             
@@ -468,13 +503,11 @@ def import_vehicles_excel():
             for row in reader:
                 row_num += 1
                 try:
-                    # بررسی فیلدهای اجباری
                     missing = [f for f in required_fields if not row.get(f, '').strip()]
                     if missing:
                         errors.append(f"ردیف {row_num}: فیلدهای اجباری خالی است: {', '.join(missing)}")
                         continue
                     
-                    # تبدیل تاریخ شمسی به میلادی
                     validity_date = jdatetime.datetime.strptime(
                         row['validity_date'].strip(), '%Y/%m/%d'
                     ).togregorian().date()
@@ -510,7 +543,7 @@ def import_vehicles_excel():
                 flash(f'{added} خودرو با موفقیت اضافه شد', 'success')
             
             if errors:
-                for err in errors[:10]:  # نمایش حداکثر ۱ خطا
+                for err in errors[:10]:
                     flash(err, 'error')
                 if len(errors) > 10:
                     flash(f'... و {len(errors) - 10} خطای دیگر', 'error')
@@ -575,7 +608,6 @@ def login():
         
         if user and user.check_password(password):
             login_user(user)
-            # اطمینان از غیر دائمی بودن session - با بستن مرورگر پاک می‌شود
             session.permanent = False
             return redirect(url_for('index'))
         flash('نام کاربری یا رمز عبور اشتباه است', 'error')
@@ -648,5 +680,5 @@ def manage_users():
 # ========== راه‌اندازی ==========
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # فقط جداول را می‌سازد، کاربر پیش‌فرض ایجاد نمی‌کند
+        db.create_all()
     app.run(debug=True, host='0.0.0.0', port=5000)
