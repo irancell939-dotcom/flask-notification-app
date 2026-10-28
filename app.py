@@ -17,7 +17,7 @@ app.instance_path = os.path.join(BASE_DIR, 'instance')
 # مسیر پوشه آپلود عکس‌ها
 UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads', 'vehicles')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # حداکثر 5 مگابایت
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 try:
@@ -42,7 +42,6 @@ def inject_now():
 
 @app.context_processor
 def inject_db_size():
-    """محاسبه حجم دیتابیس برای نمایش به مدیر"""
     db_size = None
     if current_user.is_authenticated and current_user.is_admin:
         try:
@@ -76,14 +75,12 @@ def inject_db_size():
                         db_size = f"{size_bytes / (1024 * 1024 * 1024):.2f} GB"
         except Exception as e:
             db_size = "خطا"
-    
     return {'db_size': db_size}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def save_vehicle_photo(file, national_id):
-    """ذخیره عکس خودرو با نام شماره ملی"""
     if file and allowed_file(file.filename):
         ext = file.filename.rsplit('.', 1)[1].lower()
         filename = f"{national_id}.{ext}"
@@ -92,7 +89,6 @@ def save_vehicle_photo(file, national_id):
         return f"uploads/vehicles/{filename}"
     return None
 
-# ========== سرویس عکس‌ها ==========
 @app.route('/uploads/vehicles/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
@@ -290,11 +286,13 @@ def vehicles():
     
     all_vehicles = Vehicle.query.order_by(Vehicle.created_at.desc()).all()
     
+    # محاسبه آمار کلی
     total = len(all_vehicles)
     active_count = len([v for v in all_vehicles if not v.is_expired()])
     expired_count = len([v for v in all_vehicles if v.is_expired()])
     violation_count = len([v for v in all_vehicles if v.violations_count > 0])
     
+    # اعمال فیلتر مدیر
     if filter_type and current_user.is_admin:
         if filter_type == 'active':
             filtered = [v for v in all_vehicles if not v.is_expired()]
@@ -308,6 +306,7 @@ def vehicles():
         filtered = all_vehicles
         filter_type = ''
     
+    # اعمال فیلتر جستجو
     if plate_1:
         filtered = [v for v in filtered if plate_1 in v.plate_1]
     if plate_2:
@@ -365,7 +364,6 @@ def add_vehicle():
             
             national_id = request.form.get('national_id', '').strip()
             
-            # بررسی تکراری نبودن شماره ملی
             if national_id and Vehicle.query.filter_by(national_id=national_id).first():
                 flash('این شماره ملی قبلاً ثبت شده است', 'error')
                 return redirect(url_for('add_vehicle'))
@@ -392,9 +390,8 @@ def add_vehicle():
                 archive_location=request.form.get('archive_location')
             )
             db.session.add(vehicle)
-            db.session.flush()  # برای گرفتن ID قبل از commit
+            db.session.flush()
             
-            # آپلود عکس با نام شماره ملی
             photo = request.files.get('photo')
             if photo and photo.filename and national_id:
                 photo_path = save_vehicle_photo(photo, national_id)
@@ -426,7 +423,6 @@ def edit_vehicle(id):
             
             new_national_id = request.form.get('national_id', '').strip()
             
-            # بررسی تکراری نبودن شماره ملی (به جز خودروی فعلی)
             if new_national_id:
                 existing = Vehicle.query.filter_by(national_id=new_national_id).first()
                 if existing and existing.id != vehicle.id:
@@ -453,16 +449,13 @@ def edit_vehicle(id):
             vehicle.referrer = request.form.get('referrer')
             vehicle.archive_location = request.form.get('archive_location')
             
-            # آپلود عکس جدید (اگر انتخاب شده باشد)
             photo = request.files.get('photo')
             if photo and photo.filename:
-                # حذف عکس قبلی
                 if vehicle.photo_path:
                     old_path = os.path.join(BASE_DIR, vehicle.photo_path)
                     if os.path.exists(old_path):
                         os.remove(old_path)
                 
-                # ذخیره عکس جدید با نام شماره ملی
                 national_id = vehicle.national_id or str(vehicle.id)
                 photo_path = save_vehicle_photo(photo, national_id)
                 if photo_path:
@@ -486,7 +479,6 @@ def delete_vehicle(id):
     
     vehicle = Vehicle.query.get_or_404(id)
     
-    # حذف عکس خودرو
     if vehicle.photo_path:
         photo_full_path = os.path.join(BASE_DIR, vehicle.photo_path)
         if os.path.exists(photo_full_path):
@@ -592,7 +584,6 @@ def import_vehicles_excel():
                     
                     national_id = row.get('national_id', '').strip() or None
                     
-                    # بررسی تکراری نبودن شماره ملی
                     if national_id and Vehicle.query.filter_by(national_id=national_id).first():
                         errors.append(f"ردیف {row_num}: شماره ملی {national_id} تکراری است")
                         continue
