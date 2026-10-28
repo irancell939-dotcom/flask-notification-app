@@ -1,19 +1,35 @@
 {% extends "base.html" %}
-
 {% block title %}تردد های مجاز{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="text-center mb-4">لیست تردد های مجاز</h2>
-    
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <p class="text-center text-muted">این صفحه برای نمایش لیست تردد های مجاز طراحی شده است.</p>
-        </div>
-    </div>
-    
-    <div class="text-center mt-3">
-        <a href="{{ url_for('index') }}" class="btn btn-secondary">بازگشت به صفحه اصلی</a>
-    </div>
+<h1 class="page-title">لیست تردد های مجاز</h1>
+
+<div class="notification-card" style="text-align: center; padding: 30px;">
+    <div style="font-size: 50px; margin-bottom: 15px;"></div>
+    <h2 style="color: #2c3e50; margin-bottom: 10px; font-size: 18px;">تردد های مجاز</h2>
+    <p style="color: #666; line-height: 1.8; font-size: 14px;">
+        این صفحه برای نمایش لیست تردد های مجاز طراحی شده است.
+        برای مشاهده جزئیات خودروها و رانندگان، به بخش 
+        <a href="{{ url_for('vehicles') }}" style="color: #3498db; font-weight: bold;">تردد خودرویی</a>
+        مراجعه کنید.
+    </p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 20px;">
+    <a href="{{ url_for('vehicles') }}" 
+       style="background: white; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+        <div style="font-size: 28px; margin-bottom: 8px;">🚙</div>
+        <div style="color: #2c3e50; font-weight: bold; font-size: 14px;">لیست خودروها</div>
+    </a>
+    <a href="{{ url_for('index') }}" 
+       style="background: white; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+        <div style="font-size: 28px; margin-bottom: 8px;">📢</div>
+        <div style="color: #2c3e50; font-weight: bold; font-size: 14px;">اطلاعیه‌ها</div>
+    </a>
+    <a href="{{ url_for('archive') }}" 
+       style="background: white; padding: 20px; border-radius: 12px; text-decoration: none; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+        <div style="font-size: 28px; margin-bottom: 8px;">📁</div>
+        <div style="color: #2c3e50; font-weight: bold; font-size: 14px;">بایگانی</div>
+    </a>
 </div>
 {% endblock %}
