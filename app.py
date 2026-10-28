@@ -15,10 +15,11 @@ app = Flask(__name__, instance_relative_config=False)
 app.config.from_object(Config)
 app.instance_path = os.path.join(BASE_DIR, 'instance')
 
-# ایجاد پوشه‌های لازم
+# ایجاد پوشه‌های لازم (بسیار مهم برای آپلود عکس)
 try:
     os.makedirs(app.instance_path, exist_ok=True)
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    print(f"Upload folder created at: {app.config['UPLOAD_FOLDER']}")
 except Exception as e:
     print(f"Warning: Could not create folders: {e}")
 
@@ -38,7 +39,6 @@ def inject_now():
 
 @app.context_processor
 def inject_db_size():
-    """محاسبه حجم دیتابیس برای نمایش به مدیر"""
     db_size = None
     if current_user.is_authenticated and current_user.is_admin:
         try:
@@ -74,95 +74,79 @@ def inject_db_size():
             db_size = "خطا"
     return {'db_size': db_size}
 
+# ========== توابع کمکی آپلود عکس ==========
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
 def allowed_file(filename):
-    """بررسی فرمت مجاز فایل"""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def compress_image(file, max_size_kb=25):
-    """
-    فشرده‌سازی خودکار عکس تا رسیدن به کمترین حد قابل نمایش (پیش‌فرض 25 کیلوبایت)
-    """
+    """فشرده‌سازی خودکار عکس تا ۲۵ کیلوبایت"""
     try:
-        # ۱. باز کردن عکس
         img = Image.open(file)
         
-        # ۲. تبدیل به RGB (حذف کانال شفافیت برای کاهش حجم)
+        # تبدیل به RGB
         if img.mode in ('RGBA', 'P', 'LA'):
             img = img.convert('RGB')
         
-        # ۳. کوچک کردن ابعاد (حداکثر ۳۰۰ پیکسل برای هر طرف)
+        # کوچک کردن ابعاد به حداکثر ۳۰۰ پیکسل
         max_dimension = 300
         if img.width > max_dimension or img.height > max_dimension:
             img.thumbnail((max_dimension, max_dimension), Image.Resampling.LANCZOS)
         
         output = io.BytesIO()
-        quality = 50  # شروع با کیفیت متوسط
+        quality = 50
         
-        # ۴. حلقه فشرده‌سازی تا رسیدن به حجم هدف
-        while quality > 20:  # کیفیت را پایین‌تر از ۲۰ نبر چون تصویر خراب می‌شود
+        while quality > 20:
             output.seek(0)
             output.truncate()
-            
-            # ذخیره به فرمت JPEG با بهینه‌سازی
             img.save(output, format='JPEG', quality=quality, optimize=True)
-            
             size_kb = output.tell() / 1024
-            
             if size_kb <= max_size_kb:
                 break
-            
-            quality -= 10  # کاهش پله‌ای کیفیت
+            quality -= 10
         
-        # ۵. اگر هنوز حجم بالا بود، ابعاد را باز هم کوچک‌تر کن
+        # اگر هنوز بزرگ بود، ابعاد را کوچک‌تر کن
         if size_kb > max_size_kb:
             scale = 0.7
             while size_kb > max_size_kb and scale > 0.4:
                 new_size = (int(img.width * scale), int(img.height * scale))
                 img_resized = img.resize(new_size, Image.Resampling.LANCZOS)
-                
                 output.seek(0)
                 output.truncate()
                 img_resized.save(output, format='JPEG', quality=30, optimize=True)
-                
                 size_kb = output.tell() / 1024
                 scale -= 0.1
         
         output.seek(0)
         return output
-        
     except Exception as e:
-        print(f"خطا در فشرده‌سازی عکس: {e}")
+        print(f"خطا در فشرده‌سازی: {e}")
         return None
 
 def save_vehicle_photo(file, national_id):
-    """ذخیره عکس خودرو با فشرده‌سازی حداکثری"""
-    if file and allowed_file(file.filename):
-        # فراخوانی تابع فشرده‌سازی با هدف ۵ کیلوبایت
-        compressed_image = compress_image(file, max_size_kb=25)
-        
-        if compressed_image:
+    """ذخیره عکس با فشرده‌سازی و نام شماره ملی"""
+    if file and file.filename and allowed_file(file.filename):
+        compressed = compress_image(file, max_size_kb=25)
+        if compressed:
             filename = f"{national_id}.jpg"
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            
             with open(filepath, 'wb') as f:
-                f.write(compressed_image.read())
-            
-            return f"uploads/vehicles/{filename}"
-        else:
-            # اگر خطا داد، عکس اصلی را با فرمت jpg ذخیره کن
-            filename = f"{national_id}.jpg"
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.seek(0)
-            # تبدیل ساده در صورت شکست فشرده‌سازی
-            img = Image.open(file).convert('RGB')
-            img.save(filepath, format='JPEG', quality=50, optimize=True)
+                f.write(compressed.read())
             return f"uploads/vehicles/{filename}"
     return None
 
+# ========== Route سرویس عکس‌ها ==========
 @app.route('/uploads/vehicles/<filename>')
 def uploaded_file(filename):
-    """سرویس‌دهی فایل‌های آپلود شده"""
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+# ========== صفحه چاپ کارت شناسایی ==========
+@app.route('/vehicle/<int:id>/print')
+@login_required
+def print_vehicle_card(id):
+    vehicle = Vehicle.query.get_or_404(id)
+    return render_template('print_card.html', vehicle=vehicle)
 
 # ========== اطلاعیه‌ها ==========
 @app.route('/')
@@ -357,13 +341,11 @@ def vehicles():
     
     all_vehicles = Vehicle.query.order_by(Vehicle.created_at.desc()).all()
     
-    # محاسبه آمار کلی
     total = len(all_vehicles)
     active_count = len([v for v in all_vehicles if not v.is_expired()])
     expired_count = len([v for v in all_vehicles if v.is_expired()])
     violation_count = len([v for v in all_vehicles if v.violations_count > 0])
     
-    # اعمال فیلتر مدیر
     if filter_type and current_user.is_admin:
         if filter_type == 'active':
             filtered = [v for v in all_vehicles if not v.is_expired()]
@@ -377,7 +359,6 @@ def vehicles():
         filtered = all_vehicles
         filter_type = ''
     
-    # اعمال فیلتر جستجو
     if plate_1:
         filtered = [v for v in filtered if plate_1 in v.plate_1]
     if plate_2:
@@ -469,6 +450,7 @@ def add_vehicle():
                 photo_path = save_vehicle_photo(photo, national_id)
                 if photo_path:
                     vehicle.photo_path = photo_path
+                    print(f"عکس ذخیره شد: {photo_path}")
             
             db.session.commit()
             flash('خودرو با موفقیت اضافه شد', 'success')
@@ -535,6 +517,7 @@ def edit_vehicle(id):
                 photo_path = save_vehicle_photo(photo, national_id)
                 if photo_path:
                     vehicle.photo_path = photo_path
+                    print(f"عکس جدید ذخیره شد: {photo_path}")
             
             db.session.commit()
             flash('اطلاعات خودرو با موفقیت ویرایش شد', 'success')
@@ -554,7 +537,6 @@ def delete_vehicle(id):
     
     vehicle = Vehicle.query.get_or_404(id)
     
-    # حذف عکس خودرو
     if vehicle.photo_path:
         photo_full_path = os.path.join(BASE_DIR, vehicle.photo_path)
         if os.path.exists(photo_full_path):
@@ -565,7 +547,7 @@ def delete_vehicle(id):
     flash('خودرو حذف شد', 'success')
     return redirect(url_for('vehicles'))
 
-# ========== Import/Export خودرو با اکسل ==========
+# ========== Import/Export خودرو ==========
 @app.route('/vehicles/export_excel')
 @login_required
 def export_vehicles_excel():
