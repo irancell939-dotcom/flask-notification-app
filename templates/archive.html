@@ -1,47 +1,74 @@
 {% extends "base.html" %}
-
 {% block title %}بایگانی اطلاعیه‌ها{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="text-center mb-4">بایگانی اطلاعیه‌ها</h2>
-    
-    {% if notifications %}
-        <div class="row">
-            {% for notification in notifications %}
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="card h-100 shadow-sm border-0 bg-light">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            {% if notification.is_important %}
-                            <span class="badge bg-danger me-2">مهم</span>
-                            {% endif %}
+<h1 class="page-title">بایگانی اطلاعیه‌ها</h1>
+
+{% if notifications %}
+    {% for notification in notifications %}
+        <div class="notification-card" style="opacity: 0.85;">
+            <div class="card-top">
+                <div class="card-title-area">
+                    {% if notification.is_important %}
+                        <span class="badge-important">مهم</span>
+                    {% endif %}
+                    <div style="flex: 1;">
+                        <div style="font-size: 16px; font-weight: bold; color: #2c3e50; margin-bottom: 5px;">
                             {{ notification.title }}
-                        </h5>
-                        <p class="card-text text-muted small">{{ notification.description[:100] }}...</p>
-                        <hr>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">انقضا: {{ notification.get_shamsi_expiry() }}</small>
-                            {% if current_user.is_admin %}
-                            <div>
-                                <a href="{{ url_for('edit_item', item_id=notification.id) }}" class="btn btn-sm btn-outline-primary">ویرایش</a>
-                                <a href="{{ url_for('delete_item', item_id=notification.id) }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('آیا از حذف دائمی اطمینان دارید؟')">حذف</a>
-                            </div>
-                            {% endif %}
                         </div>
+                        <span style="background: #6c757d; color: white; padding: 3px 10px; border-radius: 8px; font-size: 12px; display: inline-block;">
+                            📁 بایگانی شده
+                        </span>
                     </div>
                 </div>
             </div>
-            {% endfor %}
+
+            <div style="margin: 12px 0; padding: 12px; background: #f8f9fa; border-radius: 10px; color: #555; line-height: 1.7; font-size: 14px;">
+                {{ notification.description[:150] }}{% if notification.description|length > 150 %}...{% endif %}
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px;">
+                <span style="background: #e3f2fd; color: #0d47a1; padding: 5px 12px; border-radius: 8px; font-size: 13px;">
+                     انقضا: {{ notification.get_shamsi_expiry() }}
+                </span>
+                <span style="background: #fff3cd; color: #856404; padding: 5px 12px; border-radius: 8px; font-size: 13px;">
+                    ⏳ منقضی شده
+                </span>
+            </div>
+
+            {% if current_user.is_admin %}
+                <div style="display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap;">
+                    <a href="{{ url_for('view_item', item_id=notification.id) }}" 
+                       style="flex: 1; min-width: 100px; background: #3498db; color: white; padding: 10px; border-radius: 8px; text-decoration: none; text-align: center; font-size: 14px;">
+                        مشاهده
+                    </a>
+                    <a href="{{ url_for('edit_item', item_id=notification.id) }}" 
+                       style="flex: 1; min-width: 100px; background: #f39c12; color: white; padding: 10px; border-radius: 8px; text-decoration: none; text-align: center; font-size: 14px;">
+                        ویرایش
+                    </a>
+                    <a href="{{ url_for('delete_item', item_id=notification.id) }}" 
+                       style="flex: 1; min-width: 100px; background: #e74c3c; color: white; padding: 10px; border-radius: 8px; text-decoration: none; text-align: center; font-size: 14px;"
+                       onclick="return confirm('آیا از حذف دائمی این اطلاعیه مطمئن هستید؟')">
+                        حذف دائمی
+                    </a>
+                </div>
+            {% endif %}
         </div>
-    {% else %}
-        <div class="alert alert-info text-center">
-            هیچ مورد بایگانی شده‌ای وجود ندارد.
-        </div>
-    {% endif %}
-    
-    <div class="text-center mt-3">
-        <a href="{{ url_for('index') }}" class="btn btn-secondary">بازگشت به صفحه اصلی</a>
+    {% endfor %}
+{% else %}
+    <div class="notification-card" style="text-align: center; padding: 40px 20px;">
+        <div style="font-size: 50px; margin-bottom: 15px;">📁</div>
+        <h3 style="color: #2c3e50; margin-bottom: 10px; font-size: 18px;">هیچ مورد بایگانی شده‌ای وجود ندارد</h3>
+        <p style="color: #888; font-size: 14px;">
+            اطلاعیه‌های منقضی شده یا بایگانی شده در اینجا نمایش داده می‌شوند.
+        </p>
     </div>
+{% endif %}
+
+<div style="text-align: center; margin-top: 20px;">
+    <a href="{{ url_for('index') }}" 
+       style="background: #6c757d; color: white; padding: 12px 25px; border-radius: 10px; text-decoration: none; font-size: 15px; display: inline-block;">
+        ← بازگشت به صفحه اصلی
+    </a>
 </div>
 {% endblock %}
