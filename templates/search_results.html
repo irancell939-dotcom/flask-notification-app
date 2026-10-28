@@ -1,39 +1,55 @@
 {% extends "base.html" %}
-
 {% block title %}نتایج جستجو{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h3 class="mb-4">نتایج جستجو برای: "{{ query }}"</h3>
-    
-    {% if notifications %}
-        <div class="row">
-            {% for notification in notifications %}
-            <div class="col-md-6 col-lg-4 mb-3">
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <a href="{{ url_for('view_item', item_id=notification.id) }}" class="text-decoration-none text-dark">
-                                {% if notification.is_important %}
-                                <span class="badge bg-danger me-2">مهم</span>
-                                {% endif %}
-                                {{ notification.title }}
-                            </a>
-                        </h5>
-                        <p class="card-text text-muted small">{{ notification.description[:100] }}...</p>
-                    </div>
+<div style="text-align: center; margin-bottom: 20px;">
+    <h1 class="page-title" style="margin-bottom: 8px;">نتایج جستجو</h1>
+    <p style="color: #666; font-size: 14px;">
+        برای عبارت: <strong style="color: #f39c12;">"{{ query }}"</strong>
+    </p>
+</div>
+
+{% if notifications %}
+    {% for notification in notifications %}
+        {% set days_left = (notification.expiry_date - datetime.now().date()).days %}
+        
+        <div class="notification-card">
+            <div class="card-top">
+                <div class="card-title-area">
+                    {% if notification.is_important %}
+                        <span class="badge-important">مهم</span>
+                    {% endif %}
+                    <a href="{{ url_for('view_item', item_id=notification.id) }}" class="card-title">
+                        {{ notification.title }}
+                    </a>
                 </div>
             </div>
-            {% endfor %}
+
+            <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; color: #555; font-size: 14px; line-height: 1.7;">
+                {{ notification.description[:120] }}{% if notification.description|length > 120 %}...{% endif %}
+            </div>
+
+            <div style="margin-top: 10px;">
+                {% if days_left > 0 %}
+                    <span class="badge-days">{{ days_left }} روز مانده</span>
+                {% elif days_left == 0 %}
+                    <span class="badge-days today">امروز آخرین روز است</span>
+                {% else %}
+                    <span class="badge-days expired">منقضی شده</span>
+                {% endif %}
+            </div>
         </div>
-    {% else %}
-        <div class="alert alert-warning">
-            هیچ نتیجه‌ای یافت نشد.
-        </div>
-    {% endif %}
-    
-    <div class="mt-3">
-        <a href="{{ url_for('index') }}" class="btn btn-primary">بازگشت به صفحه اصلی</a>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        هیچ نتیجه‌ای برای "{{ query }}" یافت نشد.
     </div>
+{% endif %}
+
+<div style="text-align: center; margin-top: 20px;">
+    <a href="{{ url_for('index') }}" 
+       style="background: #6c757d; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px;">
+        ← بازگشت به صفحه اصلی
+    </a>
 </div>
 {% endblock %}
