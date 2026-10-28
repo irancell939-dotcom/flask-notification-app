@@ -11,16 +11,15 @@
     </a>
 </div>
 
-<!-- دکمه‌های فیلتر مدیر -->
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
     <a href="{{ url_for('vehicles', filter='active') }}" 
        style="background: {{ '#28a745' if active_filter == 'active' else 'white' }}; color: {{ 'white' if active_filter == 'active' else '#28a745' }}; padding: 12px 8px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px; border: 2px solid #28a745;">
-         مجاز به تردد<br>
+        ✅ مجاز به تردد<br>
         <span style="font-size: 18px;">{{ active_count }}</span>
     </a>
     <a href="{{ url_for('vehicles', filter='expired') }}" 
        style="background: {{ '#e74c3c' if active_filter == 'expired' else 'white' }}; color: {{ 'white' if active_filter == 'expired' else '#e74c3c' }}; padding: 12px 8px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px; border: 2px solid #e74c3c;">
-         منقضی شده<br>
+        ⏰ منقضی شده<br>
         <span style="font-size: 18px;">{{ expired_count }}</span>
     </a>
     <a href="{{ url_for('vehicles', filter='violation') }}" 
@@ -33,13 +32,12 @@
 {% if active_filter %}
 <div style="text-align: center; margin-bottom: 15px;">
     <a href="{{ url_for('vehicles') }}" style="background: #6c757d; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13px;">
-         حذف فیلتر و نمایش همه
+        ✕ حذف فیلتر و نمایش همه
     </a>
 </div>
 {% endif %}
 {% endif %}
 
-<!-- آمار کلی -->
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px;">
     <div style="background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
         <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ total_vehicles }}</div>
@@ -59,28 +57,14 @@
     </div>
 </div>
 
-<!-- فرم جستجو به شکل پلاک ایرانی -->
 <div style="background: white; padding: 20px; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-    <h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 16px; text-align: center;"> جستجوی پلاک و راننده</h3>
+    <h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 16px; text-align: center;">🔍 جستجوی پلاک و راننده</h3>
     
-    <!-- استایل placeholder کم‌رنگ -->
     <style>
         .plate-input::placeholder {
             color: #d0d0d0 !important;
             opacity: 0.5 !important;
             font-weight: normal !important;
-        }
-        .plate-input::-webkit-input-placeholder {
-            color: #d0d0d0 !important;
-            opacity: 0.5 !important;
-        }
-        .plate-input::-moz-placeholder {
-            color: #d0d0d0 !important;
-            opacity: 0.5 !important;
-        }
-        .plate-input:-ms-input-placeholder {
-            color: #d0d0d0 !important;
-            opacity: 0.5 !important;
         }
     </style>
     
@@ -89,55 +73,40 @@
         <input type="hidden" name="filter" value="{{ active_filter }}">
         {% endif %}
         
-        <!-- پلاک ایرانی برای جستجو (LTR - مثل پلاک واقعی) -->
         <div style="display: flex; justify-content: center; margin-bottom: 15px;">
             <div class="iranian-plate large" style="direction: ltr; max-width: 420px; width: 100%;">
-                <!-- بخش آبی (سمت چپ در LTR) - عرض کم شد -->
                 <div class="plate-blue">
                     <div class="plate-flag"></div>
                     <div class="plate-ir-text">I.R.<br>IRAN</div>
                 </div>
                 
-                <!-- بخش اصلی پلاک با فیلدهای ورودی -->
                 <div class="plate-main" style="flex: 1; gap: 8px; justify-content: center;">
-                    <!-- دو رقم -->
                     <input type="text" name="plate_1" value="{{ plate_1 }}" maxlength="2" placeholder="12"
                            class="plate-input"
-                           style="width: 55px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7; color: #1a1a1a;"
-                           title="دو رقم">
+                           style="width: 55px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7; color: #1a1a1a;">
                     
-                    <!-- حرف -->
                     <input type="text" name="plate_2" value="{{ plate_2 }}" maxlength="1" placeholder="ب"
                            class="plate-input"
-                           style="width: 40px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7; color: #1a1a1a;"
-                           title="حرف">
+                           style="width: 40px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7; color: #1a1a1a;">
                     
-                    <!-- سه رقم -->
                     <input type="text" name="plate_3" value="{{ plate_3 }}" maxlength="3" placeholder="345"
                            class="plate-input"
-                           style="width: 75px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7; color: #1a1a1a;"
-                           title="سه رقم">
+                           style="width: 75px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7; color: #1a1a1a;">
                 </div>
                 
-                <!-- کد شهرستان (سمت راست در LTR) - عرض زیاد شد -->
                 <div class="plate-code" style="border-left: 2px solid #2c2c2c; border-right: none;">
                     <input type="text" name="plate_4" value="{{ plate_4 }}" maxlength="2" placeholder="11"
                            class="plate-input"
-                           style="width: 63px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7; color: #1a1a1a;"
-                           title="کد شهرستان">
+                           style="width: 63px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7; color: #1a1a1a;">
                 </div>
             </div>
         </div>
         
-        <!-- فیلد نام راننده -->
         <div style="margin-bottom: 15px;">
             <input type="text" name="driver" value="{{ driver_search }}" placeholder="نام راننده (اختیاری)"
-                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; font-family: Tahoma; text-align: center; background: #fafafa;"
-                   onfocus="this.style.borderColor='#f39c12'; this.style.background='white';"
-                   onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';">
+                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; font-family: Tahoma; text-align: center; background: #fafafa;">
         </div>
         
-        <!-- دکمه‌ها -->
         <div style="display: flex; gap: 10px;">
             <button type="submit" style="flex: 2; background: #f39c12; color: white; padding: 12px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; font-family: Tahoma;">
                 🔍 جستجو
@@ -153,7 +122,6 @@
     </form>
 </div>
 
-<!-- لیست خودروها با id برای scroll -->
 <div id="search-results">
     {% include 'vehicle_cards_partial.html' %}
 </div>
