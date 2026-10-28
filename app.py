@@ -15,11 +15,11 @@ app = Flask(__name__, instance_relative_config=False)
 app.config.from_object(Config)
 app.instance_path = os.path.join(BASE_DIR, 'instance')
 
-# ایجاد پوشه‌های لازم (بسیار مهم برای آپلود عکس)
+# ایجاد پوشه‌های لازم
 try:
     os.makedirs(app.instance_path, exist_ok=True)
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    print(f"Upload folder created at: {app.config['UPLOAD_FOLDER']}")
+    print(f"Upload folder: {app.config['UPLOAD_FOLDER']}")
 except Exception as e:
     print(f"Warning: Could not create folders: {e}")
 
@@ -74,29 +74,22 @@ def inject_db_size():
             db_size = "خطا"
     return {'db_size': db_size}
 
-# ========== توابع کمکی آپلود عکس ==========
+# ========== توابع آپلود عکس ==========
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def compress_image(file, max_size_kb=25):
-    """فشرده‌سازی خودکار عکس تا ۲۵ کیلوبایت"""
     try:
         img = Image.open(file)
-        
-        # تبدیل به RGB
         if img.mode in ('RGBA', 'P', 'LA'):
             img = img.convert('RGB')
-        
-        # کوچک کردن ابعاد به حداکثر ۳۰۰ پیکسل
         max_dimension = 300
         if img.width > max_dimension or img.height > max_dimension:
             img.thumbnail((max_dimension, max_dimension), Image.Resampling.LANCZOS)
-        
         output = io.BytesIO()
         quality = 50
-        
         while quality > 20:
             output.seek(0)
             output.truncate()
@@ -105,8 +98,6 @@ def compress_image(file, max_size_kb=25):
             if size_kb <= max_size_kb:
                 break
             quality -= 10
-        
-        # اگر هنوز بزرگ بود، ابعاد را کوچک‌تر کن
         if size_kb > max_size_kb:
             scale = 0.7
             while size_kb > max_size_kb and scale > 0.4:
@@ -117,7 +108,6 @@ def compress_image(file, max_size_kb=25):
                 img_resized.save(output, format='JPEG', quality=30, optimize=True)
                 size_kb = output.tell() / 1024
                 scale -= 0.1
-        
         output.seek(0)
         return output
     except Exception as e:
@@ -125,7 +115,6 @@ def compress_image(file, max_size_kb=25):
         return None
 
 def save_vehicle_photo(file, national_id):
-    """ذخیره عکس با فشرده‌سازی و نام شماره ملی"""
     if file and file.filename and allowed_file(file.filename):
         compressed = compress_image(file, max_size_kb=25)
         if compressed:
@@ -136,17 +125,77 @@ def save_vehicle_photo(file, national_id):
             return f"uploads/vehicles/{filename}"
     return None
 
-# ========== Route سرویس عکس‌ها ==========
 @app.route('/uploads/vehicles/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-# ========== صفحه چاپ کارت شناسایی ==========
+# ========== صفحه چاپ کارت ==========
 @app.route('/vehicle/<int:id>/print')
 @login_required
 def print_vehicle_card(id):
     vehicle = Vehicle.query.get_or_404(id)
     return render_template('print_card.html', vehicle=vehicle)
+
+# ========== آپلود گروهی عکس ==========
+@app.route('/vehicles/bulk_upload_photos', methods=['GET', 'POST'])
+@login_required
+def bulk_upload_photos():
+    if not current_user.is_admin:
+        flash('فقط مدیر می‌تواند عکس آپلود کند', 'error')
+        return redirect(url_for('vehicles'))
+    
+    if request.method == 'POST':
+        files = request.files.getlist('photos')
+        if not files or files[0].filename == '':
+            flash('لطفاً حداقل یک عکس انتخاب کنید', 'error')
+            return redirect(url_for('bulk_upload_photos'))
+        
+        uploaded = 0
+        skipped = 0
+        errors = []
+        
+        all_national_ids = {v.national_id: v.id for v in Vehicle.query.filter(Vehicle.national_id.isnot(None)).all()}
+        
+        for file in files:
+            if file.filename and allowed_file(file.filename):
+                filename_without_ext = os.path.splitext(file.filename)[0].strip()
+                if filename_without_ext in all_national_ids:
+                    national_id = filename_without_ext
+                    vehicle_id = all_national_ids[national_id]
+                    vehicle = Vehicle.query.get(vehicle_id)
+                    if vehicle:
+                        if vehicle.photo_path:
+                            old_path = os.path.join(BASE_DIR, vehicle.photo_path)
+                            if os.path.exists(old_path):
+                                os.remove(old_path)
+                        photo_path = save_vehicle_photo(file, national_id)
+                        if photo_path:
+                            vehicle.photo_path = photo_path
+                            db.session.commit()
+                            uploaded += 1
+                        else:
+                            errors.append(f"{national_id}: خطا در ذخیره")
+                else:
+                    skipped += 1
+                    errors.append(f"{filename_without_ext}: شماره ملی یافت نشد")
+        
+        if uploaded > 0:
+            flash(f'{uploaded} عکس با موفقیت آپلود شد', 'success')
+        if skipped > 0:
+            flash(f'{skipped} عکس رد شد (شماره ملی مطابقت نداشت)', 'error')
+        if errors:
+            for err in errors[:5]:
+                flash(err, 'error')
+        
+        return redirect(url_for('vehicles'))
+    
+    vehicles_without_photo = Vehicle.query.filter(
+        (Vehicle.photo_path.is_(None)) | (Vehicle.photo_path == '')
+    ).filter(Vehicle.national_id.isnot(None)).all()
+    
+    return render_template('bulk_upload_photos.html', 
+                           vehicles_without_photo=vehicles_without_photo,
+                           total_vehicles=Vehicle.query.count())
 
 # ========== اطلاعیه‌ها ==========
 @app.route('/')
@@ -444,7 +493,6 @@ def add_vehicle():
             db.session.add(vehicle)
             db.session.flush()
             
-            # آپلود و فشرده‌سازی عکس
             photo = request.files.get('photo')
             if photo and photo.filename and national_id:
                 photo_path = save_vehicle_photo(photo, national_id)
@@ -503,16 +551,13 @@ def edit_vehicle(id):
             vehicle.referrer = request.form.get('referrer')
             vehicle.archive_location = request.form.get('archive_location')
             
-            # آپلود عکس جدید
             photo = request.files.get('photo')
             if photo and photo.filename:
-                # حذف عکس قبلی
                 if vehicle.photo_path:
                     old_path = os.path.join(BASE_DIR, vehicle.photo_path)
                     if os.path.exists(old_path):
                         os.remove(old_path)
                 
-                # ذخیره عکس جدید
                 national_id = vehicle.national_id or str(vehicle.id)
                 photo_path = save_vehicle_photo(photo, national_id)
                 if photo_path:
