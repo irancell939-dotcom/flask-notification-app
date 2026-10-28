@@ -1,22 +1,30 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, abort, session
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, abort, session, send_from_directory
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Notification, Comment, Vehicle, Violation
 from config import Config
-from datetime import datetime, timedelta
+from datetime import datetime
 import jdatetime
 import os
 import csv
 import io
+from werkzeug.utils import secure_filename
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__, instance_relative_config=False)
 app.config.from_object(Config)
 app.instance_path = os.path.join(BASE_DIR, 'instance')
 
+# مسیر پوشه آپلود عکس‌ها
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads', 'vehicles')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # حداکثر 5 مگابایت
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
 try:
     os.makedirs(app.instance_path, exist_ok=True)
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 except Exception as e:
-    print(f"Warning: Could not create instance folder: {e}")
+    print(f"Warning: Could not create folders: {e}")
 
 db.init_app(app)
 
@@ -70,6 +78,24 @@ def inject_db_size():
             db_size = "خطا"
     
     return {'db_size': db_size}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def save_vehicle_photo(file, national_id):
+    """ذخیره عکس خودرو با نام شماره ملی"""
+    if file and allowed_file(file.filename):
+        ext = file.filename.rsplit('.', 1)[1].lower()
+        filename = f"{national_id}.{ext}"
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        return f"uploads/vehicles/{filename}"
+    return None
+
+# ========== سرویس عکس‌ها ==========
+@app.route('/uploads/vehicles/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # ========== اطلاعیه‌ها ==========
 @app.route('/')
@@ -264,13 +290,11 @@ def vehicles():
     
     all_vehicles = Vehicle.query.order_by(Vehicle.created_at.desc()).all()
     
-    # محاسبه آمار کلی
     total = len(all_vehicles)
     active_count = len([v for v in all_vehicles if not v.is_expired()])
     expired_count = len([v for v in all_vehicles if v.is_expired()])
     violation_count = len([v for v in all_vehicles if v.violations_count > 0])
     
-    # اعمال فیلتر مدیر
     if filter_type and current_user.is_admin:
         if filter_type == 'active':
             filtered = [v for v in all_vehicles if not v.is_expired()]
@@ -284,7 +308,6 @@ def vehicles():
         filtered = all_vehicles
         filter_type = ''
     
-    # اعمال فیلتر جستجو
     if plate_1:
         filtered = [v for v in filtered if plate_1 in v.plate_1]
     if plate_2:
@@ -340,7 +363,16 @@ def add_vehicle():
                 request.form.get('validity_date'), '%Y/%m/%d'
             ).togregorian().date()
             
+            national_id = request.form.get('national_id', '').strip()
+            
+            # بررسی تکراری نبودن شماره ملی
+            if national_id and Vehicle.query.filter_by(national_id=national_id).first():
+                flash('این شماره ملی قبلاً ثبت شده است', 'error')
+                return redirect(url_for('add_vehicle'))
+            
             vehicle = Vehicle(
+                national_id=national_id or None,
+                dormitory_status=request.form.get('dormitory_status', '').strip() or None,
                 plate_1=request.form.get('plate_1'),
                 plate_2=request.form.get('plate_2'),
                 plate_3=request.form.get('plate_3'),
@@ -360,11 +392,21 @@ def add_vehicle():
                 archive_location=request.form.get('archive_location')
             )
             db.session.add(vehicle)
+            db.session.flush()  # برای گرفتن ID قبل از commit
+            
+            # آپلود عکس با نام شماره ملی
+            photo = request.files.get('photo')
+            if photo and photo.filename and national_id:
+                photo_path = save_vehicle_photo(photo, national_id)
+                if photo_path:
+                    vehicle.photo_path = photo_path
+            
             db.session.commit()
             flash('خودرو با موفقیت اضافه شد', 'success')
             return redirect(url_for('vehicles'))
         except Exception as e:
-            flash('خطا در ثبت اطلاعات خودرو', 'error')
+            db.session.rollback()
+            flash(f'خطا در ثبت اطلاعات خودرو: {str(e)}', 'error')
             
     return render_template('add_vehicle.html')
 
@@ -382,6 +424,17 @@ def edit_vehicle(id):
                 request.form.get('validity_date'), '%Y/%m/%d'
             ).togregorian().date()
             
+            new_national_id = request.form.get('national_id', '').strip()
+            
+            # بررسی تکراری نبودن شماره ملی (به جز خودروی فعلی)
+            if new_national_id:
+                existing = Vehicle.query.filter_by(national_id=new_national_id).first()
+                if existing and existing.id != vehicle.id:
+                    flash('این شماره ملی قبلاً برای خودروی دیگری ثبت شده است', 'error')
+                    return redirect(url_for('edit_vehicle', id=vehicle.id))
+            
+            vehicle.national_id = new_national_id or None
+            vehicle.dormitory_status = request.form.get('dormitory_status', '').strip() or None
             vehicle.plate_1 = request.form.get('plate_1')
             vehicle.plate_2 = request.form.get('plate_2')
             vehicle.plate_3 = request.form.get('plate_3')
@@ -400,11 +453,27 @@ def edit_vehicle(id):
             vehicle.referrer = request.form.get('referrer')
             vehicle.archive_location = request.form.get('archive_location')
             
+            # آپلود عکس جدید (اگر انتخاب شده باشد)
+            photo = request.files.get('photo')
+            if photo and photo.filename:
+                # حذف عکس قبلی
+                if vehicle.photo_path:
+                    old_path = os.path.join(BASE_DIR, vehicle.photo_path)
+                    if os.path.exists(old_path):
+                        os.remove(old_path)
+                
+                # ذخیره عکس جدید با نام شماره ملی
+                national_id = vehicle.national_id or str(vehicle.id)
+                photo_path = save_vehicle_photo(photo, national_id)
+                if photo_path:
+                    vehicle.photo_path = photo_path
+            
             db.session.commit()
             flash('اطلاعات خودرو با موفقیت ویرایش شد', 'success')
             return redirect(url_for('vehicle_detail', id=vehicle.id))
         except Exception as e:
-            flash('خطا در ویرایش اطلاعات خودرو', 'error')
+            db.session.rollback()
+            flash(f'خطا در ویرایش اطلاعات خودرو: {str(e)}', 'error')
             
     return render_template('edit_vehicle.html', vehicle=vehicle)
 
@@ -416,6 +485,13 @@ def delete_vehicle(id):
         return redirect(url_for('vehicles'))
     
     vehicle = Vehicle.query.get_or_404(id)
+    
+    # حذف عکس خودرو
+    if vehicle.photo_path:
+        photo_full_path = os.path.join(BASE_DIR, vehicle.photo_path)
+        if os.path.exists(photo_full_path):
+            os.remove(photo_full_path)
+    
     db.session.delete(vehicle)
     db.session.commit()
     flash('خودرو حذف شد', 'success')
@@ -434,10 +510,10 @@ def export_vehicles_excel():
     output.write('\ufeff')
     
     fieldnames = [
-        'plate_1', 'plate_2', 'plate_3', 'plate_4',
+        'national_id', 'plate_1', 'plate_2', 'plate_3', 'plate_4',
         'vehicle_type', 'color', 'driver_name', 'position',
         'student_id', 'major', 'phone', 'parking',
-        'validity_date', 'description', 'entrance_gate',
+        'validity_date', 'dormitory_status', 'description', 'entrance_gate',
         'referrer', 'archive_location'
     ]
     
@@ -446,6 +522,7 @@ def export_vehicles_excel():
     
     for v in vehicles:
         writer.writerow({
+            'national_id': v.national_id or '',
             'plate_1': v.plate_1,
             'plate_2': v.plate_2,
             'plate_3': v.plate_3,
@@ -459,6 +536,7 @@ def export_vehicles_excel():
             'phone': v.phone,
             'parking': v.parking or '',
             'validity_date': v.get_shamsi_validity(),
+            'dormitory_status': v.dormitory_status or '',
             'description': v.description or '',
             'entrance_gate': v.entrance_gate or '',
             'referrer': v.referrer or '',
@@ -512,7 +590,16 @@ def import_vehicles_excel():
                         row['validity_date'].strip(), '%Y/%m/%d'
                     ).togregorian().date()
                     
+                    national_id = row.get('national_id', '').strip() or None
+                    
+                    # بررسی تکراری نبودن شماره ملی
+                    if national_id and Vehicle.query.filter_by(national_id=national_id).first():
+                        errors.append(f"ردیف {row_num}: شماره ملی {national_id} تکراری است")
+                        continue
+                    
                     vehicle = Vehicle(
+                        national_id=national_id,
+                        dormitory_status=row.get('dormitory_status', '').strip() or None,
                         plate_1=row['plate_1'].strip(),
                         plate_2=row['plate_2'].strip(),
                         plate_3=row['plate_3'].strip(),
