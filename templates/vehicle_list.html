@@ -1,103 +1,52 @@
 {% extends "base.html" %}
 {% block title %}تردد خودرویی{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h3>لیست خودروهای مجاز به تردد</h3>
-    {% if current_user.is_admin %}
-    <a href="{{ url_for('add_vehicle') }}" class="btn btn-success">
-        <i class="fas fa-plus"></i> افزودن خودرو
+<h1 class="page-title">لیست خودروهای مجاز به تردد</h1>
+
+{% if current_user.is_admin %}
+<div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+    <a href="{{ url_for('add_vehicle') }}" style="flex: 1; min-width: 140px; background: #28a745; color: white; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold;">
+        + افزودن خودرو
     </a>
-    {% endif %}
+    <a href="{{ url_for('import_vehicles_excel') }}" style="flex: 1; min-width: 140px; background: #17a2b8; color: white; padding: 12px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold;">
+        📊 ورود/خروج اکسل
+    </a>
 </div>
+{% endif %}
 
 <!-- آمار -->
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card bg-primary text-white shadow-sm">
-            <div class="card-body text-center">
-                <h6 class="card-title">کل خودروهای ثبت شده</h6>
-                <h2 class="mb-0">{{ total_vehicles }}</h2>
-            </div>
-        </div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px;">
+    <div style="background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <div style="font-size: 24px; font-weight: bold; color: #2c3e50;">{{ total_vehicles }}</div>
+        <div style="font-size: 13px; color: #666; margin-top: 5px;">کل خودروها</div>
     </div>
-    <div class="col-md-4">
-        <div class="card bg-success text-white shadow-sm">
-            <div class="card-body text-center">
-                <h6 class="card-title">خودروهای مجاز به تردد</h6>
-                <h2 class="mb-0">{{ active_vehicles }}</h2>
-            </div>
-        </div>
+    <div style="background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <div style="font-size: 24px; font-weight: bold; color: #28a745;">{{ active_vehicles }}</div>
+        <div style="font-size: 13px; color: #666; margin-top: 5px;">مجاز به تردد</div>
     </div>
-    <div class="col-md-4">
-        <div class="card bg-danger text-white shadow-sm">
-            <div class="card-body text-center">
-                <h6 class="card-title">خودروهای منقضی شده</h6>
-                <h2 class="mb-0">{{ expired_vehicles }}</h2>
-            </div>
-        </div>
+    <div style="background: white; padding: 15px; border-radius: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">{{ expired_vehicles }}</div>
+        <div style="font-size: 13px; color: #666; margin-top: 5px;">منقضی شده</div>
     </div>
 </div>
 
-<!-- فرم جستجوی پلاک -->
-<div class="card shadow-sm mb-3">
-    <div class="card-header bg-light"><strong>جستجوی پلاک</strong></div>
-    <div class="card-body">
-        <form method="GET" action="{{ url_for('vehicles') }}">
-            <div class="row g-2 align-items-end" dir="ltr">
-                <div class="col-md-2">
-                    <label class="form-label small">دو رقم (چپ)</label>
-                    <input type="text" name="plate_1" class="form-control plate-input"
-                           value="{{ plate_1 }}" maxlength="2">
-                </div>
-                <div class="col-md-1">
-                    <label class="form-label small">حرف</label>
-                    <input type="text" name="plate_2" class="form-control plate-input"
-                           value="{{ plate_2 }}" maxlength="1">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small">سه رقم</label>
-                    <input type="text" name="plate_3" class="form-control plate-input"
-                           value="{{ plate_3 }}" maxlength="3">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label small">کد شهرستان (راست)</label>
-                    <input type="text" name="plate_4" class="form-control plate-input"
-                           value="{{ plate_4 }}" maxlength="2">
-                </div>
-                <div class="col-md-3" dir="rtl">
-                    <label class="form-label small">نام راننده (جستجوی زنده)</label>
-                    <input type="text" id="driverSearch" class="form-control"
-                           value="{{ driver_search }}" placeholder="نام راننده...">
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary w-100">جستجو</button>
-                </div>
-            </div>
-            <small class="text-muted mt-2 d-block">* هر فیلد اختیاری است. می‌توانید فقط بخشی از پلاک را وارد کنید.</small>
-        </form>
-    </div>
+<!-- فرم جستجو -->
+<div style="background: white; padding: 18px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+    <h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 16px;">🔍 جستجوی پلاک و راننده</h3>
+    <form method="GET" action="{{ url_for('vehicles') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
+        <input type="text" name="plate_1" value="{{ plate_1 }}" placeholder="دو رقم (چپ)" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
+        <input type="text" name="plate_2" value="{{ plate_2 }}" placeholder="حرف" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
+        <input type="text" name="plate_3" value="{{ plate_3 }}" placeholder="سه رقم" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
+        <input type="text" name="plate_4" value="{{ plate_4 }}" placeholder="کد شهرستان" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; text-align: center;">
+        <input type="text" name="driver" value="{{ driver_search }}" placeholder="نام راننده" style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; grid-column: 1 / -1;">
+        <button type="submit" style="grid-column: 1 / -1; background: #f39c12; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer;">
+            جستجو
+        </button>
+    </form>
+    <p style="font-size: 12px; color: #888; margin-top: 10px; text-align: center;">* هر فیلد اختیاری است. می‌توانید فقط بخشی از پلاک را وارد کنید.</p>
 </div>
 
 <!-- لیست خودروها -->
-<div id="vehiclesContainer">
-    {% include 'vehicle_cards_partial.html' %}
-</div>
-
-<script>
-    const driverInput = document.getElementById('driverSearch');
-    let searchTimeout;
-
-    driverInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        const query = this.value;
-
-        searchTimeout = setTimeout(() => {
-            fetch(`/live_search_driver?q=${encodeURIComponent(query)}`)
-                .then(r => r.json())
-                .then(data => {
-                    document.getElementById('vehiclesContainer').innerHTML = data.html;
-                });
-        }, 300);
-    });
-</script>
+{% include 'vehicle_cards_partial.html' %}
 {% endblock %}
