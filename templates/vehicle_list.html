@@ -68,38 +68,38 @@
         <input type="hidden" name="filter" value="{{ active_filter }}">
         {% endif %}
         
-        <!-- پلاک ایرانی برای جستجو (بدون direction - از RTL صفحه پیروی می‌کند) -->
+        <!-- پلاک ایرانی برای جستجو (LTR - مثل پلاک واقعی) -->
         <div style="display: flex; justify-content: center; margin-bottom: 15px;">
-            <div class="iranian-plate large" style="max-width: 420px; width: 100%;">
-                <!-- کد شهرستان (سمت راست در RTL) -->
-                <div class="plate-code" style="border-right: 2px solid #2c2c2c;">
-                    <input type="text" name="plate_4" value="{{ plate_4 }}" maxlength="2" placeholder="11"
-                           style="width: 40px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
-                           title="کد شهرستان">
+            <div class="iranian-plate large" style="direction: ltr; max-width: 420px; width: 100%;">
+                <!-- بخش آبی (سمت چپ در LTR) -->
+                <div class="plate-blue">
+                    <div class="plate-flag"></div>
+                    <div class="plate-ir-text">I.R.<br>IRAN</div>
                 </div>
                 
-                <!-- بخش اصلی پلاک با فیلدهای ورودی - ترتیب RTL: سه رقم | حرف | دو رقم -->
+                <!-- بخش اصلی پلاک با فیلدهای ورودی -->
                 <div class="plate-main" style="flex: 1; gap: 8px; justify-content: center;">
-                    <!-- سه رقم -->
-                    <input type="text" name="plate_3" value="{{ plate_3 }}" maxlength="3" placeholder="345"
-                           style="width: 75px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
-                           title="سه رقم">
+                    <!-- دو رقم -->
+                    <input type="text" name="plate_1" value="{{ plate_1 }}" maxlength="2" placeholder="12"
+                           style="width: 55px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
+                           title="دو رقم">
                     
                     <!-- حرف -->
                     <input type="text" name="plate_2" value="{{ plate_2 }}" maxlength="1" placeholder="ب"
                            style="width: 40px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
                            title="حرف">
                     
-                    <!-- دو رقم -->
-                    <input type="text" name="plate_1" value="{{ plate_1 }}" maxlength="2" placeholder="12"
-                           style="width: 55px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
-                           title="دو رقم">
+                    <!-- سه رقم -->
+                    <input type="text" name="plate_3" value="{{ plate_3 }}" maxlength="3" placeholder="345"
+                           style="width: 75px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
+                           title="سه رقم">
                 </div>
                 
-                <!-- بخش آبی (سمت چپ در RTL) -->
-                <div class="plate-blue">
-                    <div class="plate-flag"></div>
-                    <div class="plate-ir-text">I.R.<br>IRAN</div>
+                <!-- کد شهرستان (سمت راست در LTR) -->
+                <div class="plate-code" style="border-left: 2px solid #2c2c2c; border-right: none;">
+                    <input type="text" name="plate_4" value="{{ plate_4 }}" maxlength="2" placeholder="11"
+                           style="width: 40px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7;"
+                           title="کد شهرستان">
                 </div>
             </div>
         </div>
