@@ -12,6 +12,9 @@
         <a href="{{ url_for('print_vehicle_card', id=vehicle.id) }}" target="_blank" style="background: #3498db; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
             🖨️ چاپ کارت
         </a>
+        <a href="{{ url_for('bulk_upload_photos') }}" style="background: #9c27b0; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
+            📤 آپلود گروهی
+        </a>
         {% endif %}
         <a href="{{ url_for('vehicles') }}" style="background: #6c757d; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
             بازگشت
@@ -62,7 +65,7 @@
 <!-- اطلاعات هویتی -->
 {% if vehicle.national_id or vehicle.dormitory_status %}
 <div class="notification-card" style="margin-top: 15px; border-right: 4px solid #9c27b0;">
-    <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #9c27b0; padding-bottom: 8px;"> اطلاعات هویتی</h3>
+    <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #9c27b0; padding-bottom: 8px;">🆔 اطلاعات هویتی</h3>
     
     <div style="display: grid; gap: 12px;">
         {% if vehicle.national_id %}
