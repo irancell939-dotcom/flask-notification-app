@@ -2,133 +2,19 @@
 {% block title %}جزئیات خودرو{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
     <h1 class="page-title" style="margin: 0; flex: 1;">جزئیات خودرو</h1>
-    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        {% if current_user.is_admin %}
+    {% if current_user.is_admin %}
         <a href="{{ url_for('edit_vehicle', id=vehicle.id) }}" style="background: #f39c12; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
             ویرایش
         </a>
-        {% endif %}
-        <a href="{{ url_for('vehicles') }}" style="background: #6c757d; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
-            بازگشت
-        </a>
-    </div>
+    {% endif %}
+    <a href="{{ url_for('vehicles') }}" style="background: #6c757d; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px;">
+        بازگشت
+    </a>
 </div>
 
-<!-- ========== کارت تردد (پیش‌نمایش و چاپ) ========== -->
-<div style="background: white; padding: 20px; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
-        <h3 style="color: #2c3e50; font-size: 16px; margin: 0;"> پیش‌نمایش کارت تردد</h3>
-        <button onclick="printCard()" style="background: #28a745; color: white; padding: 8px 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; font-family: Tahoma;">
-            🖨️ چاپ کارت
-        </button>
-    </div>
-    
-    <!-- کارت تردد با ابعاد دقیق 10x8 سانتی‌متر -->
-    <div id="traffic-card" style="width: 10cm; height: 8cm; border: 2px solid #1e1e2e; border-radius: 8px; padding: 8px; margin: 0 auto; background: linear-gradient(135deg, #faf3e8 0%, #fff 100%); box-shadow: 0 4px 12px rgba(0,0,0,0.15); position: relative; overflow: hidden; font-family: Tahoma, Arial, sans-serif; direction: rtl;">
-        
-        <!-- هدر کارت -->
-        <div style="background: #1e1e2e; color: white; padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-            <div style="font-size: 9px; font-weight: bold;">سامانه اطلاع رسانی امین</div>
-            <div style="font-size: 8px; color: #f39c12;">کارت تردد</div>
-        </div>
-        
-        <div style="display: flex; gap: 6px; height: calc(100% - 30px);">
-            
-            <!-- بخش عکس (سمت راست) -->
-            <div style="flex-shrink: 0; width: 2.2cm;">
-                {% if vehicle.photo_path %}
-                <img src="{{ url_for('uploaded_file', filename=vehicle.photo_path.split('/')[-1]) }}" 
-                     alt="عکس"
-                     style="width: 2.2cm; height: 2.2cm; border-radius: 4px; object-fit: cover; border: 1px solid #ddd;">
-                {% else %}
-                <div style="width: 2.2cm; height: 2.2cm; border-radius: 4px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #888; border: 1px dashed #ccc;">
-                    
-                </div>
-                {% endif %}
-                
-                <!-- پلاک کوچک زیر عکس -->
-                <div style="margin-top: 4px; background: white; border: 1px solid #2c2c2c; border-radius: 3px; padding: 2px; text-align: center; font-size: 7px; direction: ltr;">
-                    <span style="font-weight: bold;">{{ vehicle.plate_1 }} {{ vehicle.plate_2 }} {{ vehicle.plate_3 }} | {{ vehicle.plate_4 }}</span>
-                </div>
-            </div>
-            
-            <!-- بخش اطلاعات (سمت چپ) -->
-            <div style="flex: 1; font-size: 8px; line-height: 1.5; overflow: hidden;">
-                
-                <!-- نام راننده -->
-                <div style="font-weight: bold; font-size: 10px; color: #1e1e2e; margin-bottom: 3px; border-bottom: 1px solid #f39c12; padding-bottom: 2px;">
-                    {{ vehicle.driver_name }}
-                </div>
-                
-                <!-- اطلاعات به صورت دو ستونه -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px 6px;">
-                    
-                    {% if vehicle.national_id %}
-                    <div><span style="color: #666;">کد ملی:</span> <strong>{{ vehicle.national_id }}</strong></div>
-                    {% endif %}
-                    
-                    <div><span style="color: #666;">نوع:</span> <strong>{{ vehicle.vehicle_type }}</strong></div>
-                    
-                    <div><span style="color: #666;">رنگ:</span> <strong>{{ vehicle.color }}</strong></div>
-                    
-                    {% if vehicle.position %}
-                    <div><span style="color: #666;">سمت:</span> <strong style="font-size: 7px;">{{ vehicle.position }}</strong></div>
-                    {% endif %}
-                    
-                    {% if vehicle.student_id %}
-                    <div><span style="color: #666;">ش.دانش:</span> <strong>{{ vehicle.student_id }}</strong></div>
-                    {% endif %}
-                    
-                    {% if vehicle.major %}
-                    <div><span style="color: #666;">رشته:</span> <strong style="font-size: 7px;">{{ vehicle.major }}</strong></div>
-                    {% endif %}
-                    
-                    {% if vehicle.parking %}
-                    <div><span style="color: #666;">پارکینگ:</span> <strong>{{ vehicle.parking }}</strong></div>
-                    {% endif %}
-                    
-                    {% if vehicle.dormitory_status %}
-                    <div><span style="color: #666;">خوابگاه:</span> <strong style="font-size: 7px;">{{ vehicle.dormitory_status }}</strong></div>
-                    {% endif %}
-                    
-                    {% if vehicle.entrance_gate %}
-                    <div style="grid-column: 1 / -1;"><span style="color: #666;">درب ورود:</span> <strong>{{ vehicle.entrance_gate }}</strong></div>
-                    {% endif %}
-                    
-                </div>
-                
-                <!-- تاریخ اعتبار در پایین -->
-                <div style="margin-top: 3px; padding-top: 3px; border-top: 1px dashed #ddd; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="font-size: 7px;">
-                        <span style="color: #666;">اعتبار تا:</span>
-                        <strong style="color: {{ '#e74c3c' if vehicle.is_expired() else '#28a745' }};">
-                            {{ vehicle.get_shamsi_validity() }}
-                        </strong>
-                    </div>
-                    {% if vehicle.is_expired() %}
-                    <div style="font-size: 7px; background: #e74c3c; color: white; padding: 1px 4px; border-radius: 3px;">منقضی</div>
-                    {% else %}
-                    <div style="font-size: 7px; background: #28a745; color: white; padding: 1px 4px; border-radius: 3px;">مجاز</div>
-                    {% endif %}
-                </div>
-                
-            </div>
-        </div>
-        
-        <!-- واترمارک -->
-        <div style="position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 6px; color: #ccc; letter-spacing: 1px;">
-            AMIN INFO SYSTEM
-        </div>
-    </div>
-    
-    <p style="text-align: center; color: #888; font-size: 12px; margin-top: 10px;">
-        💡 ابعاد کارت: ۱۰ × ۸ سانتی‌متر | هنگام چاپ، مقیاس را روی 100% تنظیم کنید
-    </p>
-</div>
-
-<!-- ========== کارت پلاک بزرگ ========== -->
+<!-- کارت پلاک بزرگ -->
 <div class="notification-card" style="text-align: center; padding: 25px;">
     {% if vehicle.photo_path %}
     <div style="margin-bottom: 15px;">
@@ -168,10 +54,10 @@
     </div>
 </div>
 
-<!-- ========== اطلاعات هویتی ========== -->
+<!-- اطلاعات هویتی -->
 {% if vehicle.national_id or vehicle.dormitory_status %}
 <div class="notification-card" style="margin-top: 15px; border-right: 4px solid #9c27b0;">
-    <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #9c27b0; padding-bottom: 8px;"> اطلاعات هویتی</h3>
+    <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #9c27b0; padding-bottom: 8px;">🆔 اطلاعات هویتی</h3>
     
     <div style="display: grid; gap: 12px;">
         {% if vehicle.national_id %}
@@ -191,7 +77,7 @@
 </div>
 {% endif %}
 
-<!-- ========== اطلاعات راننده ========== -->
+<!-- اطلاعات راننده -->
 <div class="notification-card" style="margin-top: 15px;">
     <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #f39c12; padding-bottom: 8px;">اطلاعات راننده</h3>
     
@@ -294,7 +180,7 @@
 </div>
 {% endif %}
 
-<!-- ========== تخلفات ========== -->
+<!-- تخلفات -->
 <div class="notification-card" style="margin-top: 20px;">
     <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #e74c3c; padding-bottom: 8px;">
         تخلفات ثبت شده ({{ vehicle.violations|length }})
@@ -329,7 +215,7 @@
     {% endfor %}
 </div>
 
-<!-- ========== فرم ثبت تخلف ========== -->
+<!-- فرم ثبت تخلف -->
 {% if current_user.is_authenticated %}
 <div class="notification-card" style="margin-top: 20px;">
     <h3 style="margin-bottom: 15px; color: #2c3e50;">ثبت تخلف جدید</h3>
@@ -341,62 +227,4 @@
     </form>
 </div>
 {% endif %}
-
-<!-- ========== استایل چاپ کارت ========== -->
-<style>
-    /* استایل مخصوص چاپ */
-    @media print {
-        /* مخفی کردن همه چیز به جز کارت */
-        body * {
-            visibility: hidden !important;
-        }
-        
-        /* نمایش فقط کارت تردد */
-        #traffic-card, #traffic-card * {
-            visibility: visible !important;
-        }
-        
-        /* موقعیت‌یابی کارت در وسط صفحه */
-        #traffic-card {
-            position: absolute !important;
-            left: 50% !important;
-            top: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            margin: 0 !important;
-            box-shadow: none !important;
-            border: 2px solid #000 !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
-        }
-        
-        /* حذف هدر، فوتر و حاشیه‌های پیش‌فرض مرورگر */
-        @page {
-            size: auto;
-            margin: 10mm;
-        }
-        
-        body {
-            background: white !important;
-        }
-    }
-</style>
-
-<!-- ========== اسکریپت چاپ ========== -->
-<script>
-    function printCard() {
-        // بررسی پشتیبانی مرورگر
-        if (!window.print) {
-            alert('مرورگر شما از چاپ پشتیبانی نمی‌کند');
-            return;
-        }
-        
-        // نمایش راهنما قبل از چاپ
-        const confirmed = confirm('آیا می‌خواهید کارت تردد را چاپ کنید؟\n\n💡 نکات مهم:\n• مقیاس چاپ را روی 100% تنظیم کنید\n• حاشیه (Margin) را روی Minimum بگذارید\n• گزینه Background Graphics را فعال کنید');
-        
-        if (confirmed) {
-            window.print();
-        }
-    }
-</script>
 {% endblock %}
