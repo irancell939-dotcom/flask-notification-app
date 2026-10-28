@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, Response, abort, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Notification, Comment, Vehicle, Violation
 from config import Config
@@ -225,11 +225,16 @@ def vehicles():
     all_vehicles = Vehicle.query.order_by(Vehicle.created_at.desc()).all()
     filtered = all_vehicles
     
-    if plate_1: filtered = [v for v in filtered if plate_1 in v.plate_1]
-    if plate_2: filtered = [v for v in filtered if plate_2 in v.plate_2]
-    if plate_3: filtered = [v for v in filtered if plate_3 in v.plate_3]
-    if plate_4: filtered = [v for v in filtered if plate_4 in v.plate_4]
-    if driver_search: filtered = [v for v in filtered if driver_search.lower() in v.driver_name.lower()]
+    if plate_1:
+        filtered = [v for v in filtered if plate_1 in v.plate_1]
+    if plate_2:
+        filtered = [v for v in filtered if plate_2 in v.plate_2]
+    if plate_3:
+        filtered = [v for v in filtered if plate_3 in v.plate_3]
+    if plate_4:
+        filtered = [v for v in filtered if plate_4 in v.plate_4]
+    if driver_search:
+        filtered = [v for v in filtered if driver_search.lower() in v.driver_name.lower()]
     
     total = len(all_vehicles)
     active = len([v for v in all_vehicles if not v.is_expired()])
@@ -551,6 +556,8 @@ def login():
         
         if user and user.check_password(password):
             login_user(user)
+            # اطمینان از غیر دائمی بودن session - با بستن مرورگر پاک می‌شود
+            session.permanent = False
             return redirect(url_for('index'))
         flash('نام کاربری یا رمز عبور اشتباه است', 'error')
         
@@ -622,5 +629,5 @@ def manage_users():
 # ========== راه‌اندازی ==========
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        db.create_all()  # فقط جداول را می‌سازد، کاربر پیش‌فرض ایجاد نمی‌کند
     app.run(debug=True, host='0.0.0.0', port=5000)
