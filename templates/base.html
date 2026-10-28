@@ -35,7 +35,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 4px;
         }
 
         .header-title {
@@ -49,13 +48,6 @@
         .header-title a {
             color: white;
             text-decoration: none;
-        }
-
-        .header-subtitle {
-            text-align: center;
-            font-size: 11px;
-            color: #f39c12;
-            margin-top: 2px;
         }
 
         .hamburger-btn {
@@ -187,7 +179,6 @@
             padding: 18px;
             margin-bottom: 15px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            position: relative;
         }
 
         .card-top {
@@ -245,48 +236,6 @@
 
         .badge-days.today {
             background-color: #f39c12;
-        }
-
-        .card-menu-btn {
-            background: none;
-            border: none;
-            font-size: 22px;
-            color: #888;
-            cursor: pointer;
-            padding: 5px;
-            line-height: 1;
-        }
-
-        .card-actions {
-            display: none;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid #eee;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .card-actions.show {
-            display: flex;
-        }
-
-        .card-actions a {
-            padding: 6px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 13px;
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .card-actions a.danger {
-            background: #fde8e8;
-            color: #c0392b;
-        }
-
-        .card-actions a.warning {
-            background: #fff3cd;
-            color: #856404;
         }
 
         .flash-messages {
@@ -490,12 +439,6 @@
             margin-top: 30px;
         }
 
-        .app-footer .programmer {
-            color: #f39c12;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-
         @media (min-width: 769px) {
             .main-content {
                 padding: 30px 20px;
@@ -516,7 +459,6 @@
             </div>
             <div class="header-spacer"></div>
         </div>
-        <div class="header-subtitle"> </div>
     </header>
 
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
@@ -552,6 +494,7 @@
                 <li><a href="{{ url_for('pending_notifications') }}">در انتظار تایید</a></li>
                 <li><a href="{{ url_for('add_item') }}">افزودن اطلاعیه</a></li>
                 <li><a href="{{ url_for('add_vehicle') }}">افزودن خودرو</a></li>
+                <li><a href="{{ url_for('bulk_upload_photos') }}">آپلود گروهی عکس</a></li>
                 <li><a href="{{ url_for('manage_users') }}">مدیریت کاربران</a></li>
             {% elif current_user.can_add_notification %}
                 <li><a href="{{ url_for('add_item') }}">ثبت اطلاعیه</a></li>
@@ -578,7 +521,6 @@
 
     <footer class="app-footer">
         <div>© ۱۴۰۵ - سامانه اطلاع رسانی امین</div>
-        <div class="programmer">برنامه نویس: محمدعمر خاوران</div>
     </footer>
 
     <script>
