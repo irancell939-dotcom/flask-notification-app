@@ -16,7 +16,20 @@
 
 <!-- کارت پلاک بزرگ -->
 <div class="notification-card" style="text-align: center; padding: 25px;">
-    {% include 'plate_component.html' with plate_1=vehicle.plate_1, plate_2=vehicle.plate_2, plate_3=vehicle.plate_3, plate_4=vehicle.plate_4, size='large' %}
+    <div class="iranian-plate large">
+        <div class="plate-blue">
+            <div class="plate-flag"></div>
+            <div class="plate-ir-text">I.R.<br>IRAN</div>
+        </div>
+        <div class="plate-main">
+            <span class="plate-number">{{ vehicle.plate_1 }}</span>
+            <span class="plate-letter">{{ vehicle.plate_2 }}</span>
+            <span class="plate-number">{{ vehicle.plate_3 }}</span>
+        </div>
+        <div class="plate-code">
+            <span class="plate-code-number">{{ vehicle.plate_4 }}</span>
+        </div>
+    </div>
     
     <div style="margin-top: 15px;">
         {% if vehicle.is_expired() %}
@@ -140,7 +153,11 @@
         <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid #e74c3c;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <span style="font-weight: bold; color: #2c3e50; font-size: 14px;">
-                    {{ v.reporter.full_name if v.reporter and v.reporter.full_name else (v.reporter.username if v.reporter else 'کاربر حذف شده') }}
+                    {% if v.reporter %}
+                        {{ v.reporter.full_name if v.reporter.full_name else v.reporter.username }}
+                    {% else %}
+                        کاربر حذف شده
+                    {% endif %}
                 </span>
                 <span style="color: #888; font-size: 12px;">{{ v.get_iso_created() }}</span>
             </div>
