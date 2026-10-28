@@ -1,101 +1,179 @@
 {% extends "base.html" %}
 {% block title %}افزودن خودرو{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0">افزودن خودروی مجاز</h4>
+<h1 class="page-title">افزودن خودروی مجاز</h1>
+
+<div class="notification-card">
+    <form method="POST" action="{{ url_for('add_vehicle') }}">
+        <!-- بخش پلاک -->
+        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 8px;">
+             اطلاعات پلاک
+        </h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    دو رقم (چپ) <span style="color: #e74c3c;">*</span>
+                </label>
+                <input type="text" name="plate_1" required maxlength="2"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; text-align: center; font-family: Tahoma;">
             </div>
-            <div class="card-body">
-                <form method="POST">
-                    <h6 class="border-bottom pb-2 mb-3">اطلاعات پلاک</h6>
-                    <div class="row mb-3" dir="ltr">
-                        <div class="col-3">
-                            <label class="small">دو رقم</label>
-                            <input type="text" name="plate_1" class="form-control text-center"
-                                   maxlength="2" required>
-                        </div>
-                        <div class="col-3">
-                            <label class="small">حرف فارسی</label>
-                            <input type="text" name="plate_2" class="form-control text-center"
-                                   maxlength="1" required>
-                        </div>
-                        <div class="col-3">
-                            <label class="small">سه رقم</label>
-                            <input type="text" name="plate_3" class="form-control text-center"
-                                   maxlength="3" required>
-                        </div>
-                        <div class="col-3">
-                            <label class="small">کد شهرستان</label>
-                            <input type="text" name="plate_4" class="form-control text-center"
-                                   maxlength="2" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label>نام راننده</label>
-                            <input type="text" name="driver_name" class="form-control" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>نوع خودرو</label>
-                            <input type="text" name="vehicle_type" class="form-control" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>رنگ خودرو</label>
-                            <input type="text" name="color" class="form-control" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>شماره تلفن</label>
-                            <input type="text" name="phone" class="form-control" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>سمت</label>
-                            <input type="text" name="position" class="form-control">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>شماره دانشجویی</label>
-                            <input type="text" name="student_id" class="form-control">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>رشته تحصیلی</label>
-                            <input type="text" name="major" class="form-control">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>پارکینگ</label>
-                            <input type="text" name="parking" class="form-control">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>تاریخ اعتبار (شمسی)</label>
-                            <input type="text" name="validity_date" class="form-control"
-                                   placeholder="1403/12/29" required>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>درب ورود</label>
-                            <input type="text" name="entrance_gate" class="form-control" placeholder="مثال: درب شمالی">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>معرف</label>
-                            <input type="text" name="referrer" class="form-control" placeholder="نام معرف">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label>محل بایگانی</label>
-                            <input type="text" name="archive_location" class="form-control" placeholder="مثال: بایگانی 1 - قفسه 3">
-                        </div>
-                        <div class="col-12 mb-3">
-                            <label>توضیحات</label>
-                            <textarea name="description" class="form-control" rows="3"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="{{ url_for('vehicles') }}" class="btn btn-secondary">انصراف</a>
-                        <button type="submit" class="btn btn-success">ذخیره خودرو</button>
-                    </div>
-                </form>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    حرف فارسی <span style="color: #e74c3c;">*</span>
+                </label>
+                <input type="text" name="plate_2" required maxlength="1"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; text-align: center; font-family: Tahoma;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    سه رقم <span style="color: #e74c3c;">*</span>
+                </label>
+                <input type="text" name="plate_3" required maxlength="3"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; text-align: center; font-family: Tahoma;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    کد شهرستان <span style="color: #e74c3c;">*</span>
+                </label>
+                <input type="text" name="plate_4" required maxlength="2"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; text-align: center; font-family: Tahoma;">
             </div>
         </div>
-    </div>
+
+        <!-- اطلاعات راننده و خودرو -->
+        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #28a745; padding-bottom: 8px;">
+            👤 اطلاعات راننده و خودرو
+        </h3>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                نام راننده <span style="color: #e74c3c;">*</span>
+            </label>
+            <input type="text" name="driver_name" required
+                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    نوع خودرو <span style="color: #e74c3c;">*</span>
+                </label>
+                <input type="text" name="vehicle_type" required
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    رنگ خودرو <span style="color: #e74c3c;">*</span>
+                </label>
+                <input type="text" name="color" required
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                شماره تلفن <span style="color: #e74c3c;">*</span>
+            </label>
+            <input type="tel" name="phone" required
+                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; direction: ltr; text-align: right;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    سمت
+                </label>
+                <input type="text" name="position"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    پارکینگ
+                </label>
+                <input type="text" name="parking"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    شماره دانشجویی
+                </label>
+                <input type="text" name="student_id"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    رشته تحصیلی
+                </label>
+                <input type="text" name="major"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                تاریخ اعتبار (شمسی) <span style="color: #e74c3c;">*</span>
+            </label>
+            <input type="text" name="validity_date" required
+                   style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; font-family: Tahoma; direction: ltr; text-align: right;"
+                   placeholder="1405/12/29">
+            <p style="font-size: 12px; color: #888; margin-top: 6px;">
+                فرمت تاریخ: سال/ماه/روز (مثال: 1405/12/29)
+            </p>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                درب ورود
+            </label>
+            <input type="text" name="entrance_gate"
+                   style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+        </div>
+
+        <!-- فیلدهای مدیریتی -->
+        <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #f39c12; padding-bottom: 8px;">
+            🔧 اطلاعات تکمیلی (مدیریتی)
+        </h3>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    معرف
+                </label>
+                <input type="text" name="referrer"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                    محل بایگانی
+                </label>
+                <input type="text" name="archive_location"
+                       style="width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 6px; font-weight: bold; color: #555; font-size: 13px;">
+                توضیحات
+            </label>
+            <textarea name="description" rows="3"
+                      style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: Tahoma; resize: vertical;"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{{ url_for('vehicles') }}" 
+               style="flex: 1; min-width: 120px; background: #6c757d; color: white; padding: 14px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: bold; font-size: 15px;">
+                انصراف
+            </a>
+            <button type="submit" 
+                    style="flex: 2; min-width: 140px; background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: Tahoma;">
+                ذخیره خودرو
+            </button>
+        </div>
+    </form>
 </div>
 {% endblock %}
