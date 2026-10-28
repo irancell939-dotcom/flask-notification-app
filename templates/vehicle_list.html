@@ -61,7 +61,7 @@
 
 <!-- فرم جستجو به شکل پلاک ایرانی -->
 <div style="background: white; padding: 20px; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
-    <h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 16px; text-align: center;">🔍 جستجوی پلاک و راننده</h3>
+    <h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 16px; text-align: center;"> جستجوی پلاک و راننده</h3>
     
     <!-- استایل placeholder کم‌رنگ -->
     <style>
@@ -84,7 +84,7 @@
         }
     </style>
     
-    <form method="GET" action="{{ url_for('vehicles') }}">
+    <form method="GET" action="{{ url_for('vehicles') }}" onsubmit="setTimeout(function() { var results = document.getElementById('search-results'); if (results) results.scrollIntoView({behavior: 'smooth', block: 'start'}); }, 100);">
         {% if active_filter %}
         <input type="hidden" name="filter" value="{{ active_filter }}">
         {% endif %}
@@ -92,7 +92,7 @@
         <!-- پلاک ایرانی برای جستجو (LTR - مثل پلاک واقعی) -->
         <div style="display: flex; justify-content: center; margin-bottom: 15px;">
             <div class="iranian-plate large" style="direction: ltr; max-width: 420px; width: 100%;">
-                <!-- بخش آبی (سمت چپ در LTR) -->
+                <!-- بخش آبی (سمت چپ در LTR) - عرض کم شد -->
                 <div class="plate-blue">
                     <div class="plate-flag"></div>
                     <div class="plate-ir-text">I.R.<br>IRAN</div>
@@ -119,11 +119,11 @@
                            title="سه رقم">
                 </div>
                 
-                <!-- کد شهرستان (سمت راست در LTR) -->
+                <!-- کد شهرستان (سمت راست در LTR) - عرض زیاد شد -->
                 <div class="plate-code" style="border-left: 2px solid #2c2c2c; border-right: none;">
                     <input type="text" name="plate_4" value="{{ plate_4 }}" maxlength="2" placeholder="11"
                            class="plate-input"
-                           style="width: 55px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7; color: #1a1a1a;"
+                           style="width: 63px; padding: 8px; border: 2px dashed #ccc; border-radius: 6px; font-size: 22px; font-weight: bold; text-align: center; font-family: Tahoma; background: #fffde7; color: #1a1a1a;"
                            title="کد شهرستان">
                 </div>
             </div>
@@ -153,6 +153,8 @@
     </form>
 </div>
 
-<!-- لیست خودروها -->
-{% include 'vehicle_cards_partial.html' %}
+<!-- لیست خودروها با id برای scroll -->
+<div id="search-results">
+    {% include 'vehicle_cards_partial.html' %}
+</div>
 {% endblock %}
