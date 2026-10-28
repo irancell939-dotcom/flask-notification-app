@@ -45,27 +45,29 @@
         .id-card {
             width: 10cm;
             height: 8cm;
-            background: linear-gradient(135deg, #faf3e8 0%, #fff 100%);
+            background: #fdf8f0;
             border: 2.5px solid #1e1e2e;
-            border-radius: 8px;
-            padding: 6px 8px;
+            border-radius: 10px;
+            padding: 0;
             position: relative;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             font-family: Tahoma, Arial, sans-serif;
             direction: rtl;
+            display: flex;
+            flex-direction: column;
         }
         
-        /* هدر کارت */
+        /* هدر کارت - دو بخشی */
         .card-header {
             background: #1e1e2e;
             color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-bottom: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 4px 10px;
+            border-radius: 0 0 8px 8px;
+            margin: 0 4px;
         }
         
         .card-header .title {
@@ -74,8 +76,11 @@
         }
         
         .card-header .subtitle {
-            color: #f39c12;
-            font-size: 9px;
+            background: #f39c12;
+            color: #1e1e2e;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 10px;
             font-weight: bold;
         }
         
@@ -83,189 +88,32 @@
         .card-body {
             display: flex;
             gap: 6px;
-            height: calc(100% - 22px);
-        }
-        
-        /* ========== بخش سمت چپ: عکس + مجاز/تاریخ + درب/توضیحات ========== */
-        .left-section {
-            flex-shrink: 0;
-            width: 2.6cm;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-        
-        /* عکس راننده */
-        .driver-photo {
-            width: 2.6cm;
-            height: 2.6cm;
-            border-radius: 4px;
-            object-fit: cover;
-            border: 1.5px solid #f39c12;
-        }
-        
-        .photo-placeholder {
-            width: 2.6cm;
-            height: 2.6cm;
-            border-radius: 4px;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            color: #888;
-            border: 1.5px dashed #ccc;
-        }
-        
-        /* ردیف هم‌سطح: مجاز + تاریخ */
-        .status-date-row {
-            display: flex;
-            gap: 3px;
-            align-items: stretch;
-        }
-        
-        .status-badge {
-            flex: 0 0 auto;
-            padding: 2px 4px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: bold;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 45px;
-        }
-        
-        .status-badge.active {
-            background: #28a745;
-        }
-        
-        .status-badge.expired {
-            background: #e74c3c;
-        }
-        
-        .dates-box {
+            padding: 6px 8px 0 8px;
             flex: 1;
-            background: #f0f8ff;
-            border: 1px solid #b0d4f1;
-            border-radius: 4px;
-            padding: 2px 4px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 1px;
         }
         
-        .date-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 7px;
-        }
-        
-        .date-label {
-            color: #666;
-        }
-        
-        .date-value {
-            font-weight: bold;
-            font-size: 8px;
-        }
-        
-        .date-value.issue {
-            color: #2c3e50;
-        }
-        
-        .date-value.validity {
-            color: #28a745;
-        }
-        
-        /* ردیف هم‌سطح: درب ورود + توضیحات */
-        .gate-desc-row {
-            display: flex;
-            gap: 3px;
-            align-items: stretch;
-            flex: 1;
-            min-height: 1.5cm;
-        }
-        
-        .entrance-gate-box {
-            flex: 0 0 auto;
-            width: 45px;
-            background: #e3f2fd;
-            border: 1px solid #90caf9;
-            border-radius: 4px;
-            padding: 2px 4px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: 1px;
-        }
-        
-        .gate-label {
-            font-size: 7px;
-            color: #666;
-            font-weight: normal;
-        }
-        
-        .gate-value {
-            font-size: 8px;
-            font-weight: bold;
-            color: #0d47a1;
-        }
-        
-        .description-box {
-            flex: 1;
-            background: #fff9e6;
-            border: 1px solid #f39c12;
-            border-radius: 4px;
-            padding: 2px 4px;
-            font-size: 7px;
-            line-height: 1.4;
-            color: #333;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .desc-title {
-            font-weight: bold;
-            color: #1e1e2e;
-            font-size: 7px;
-            margin-bottom: 1px;
-        }
-        
-        .desc-text {
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        /* ========== بخش سمت راست: اطلاعات + پلاک ========== */
+        /* ========== بخش سمت راست: اطلاعات ========== */
         .right-section {
             flex: 1;
-            font-size: 9px;
-            line-height: 1.4;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         
         .driver-name {
             font-weight: bold;
-            font-size: 13px;
+            font-size: 14px;
             color: #1e1e2e;
-            margin-bottom: 2px;
-            border-bottom: 1.5px solid #f39c12;
-            padding-bottom: 2px;
             text-align: center;
+            margin-bottom: 2px;
+            border-bottom: 2px solid #f39c12;
+            padding-bottom: 2px;
         }
         
         .national-id {
             font-size: 10px;
             text-align: center;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
             color: #555;
         }
         
@@ -273,77 +121,90 @@
             color: #1e1e2e;
             direction: ltr;
             display: inline-block;
+            font-weight: bold;
         }
         
-        /* ستون عمودی نوع/رنگ/پلاک */
-        .vehicle-info-column {
+        /* گرید اطلاعات خودرو */
+        .vehicle-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px 8px;
+            margin-bottom: 3px;
+            font-size: 9px;
+        }
+        
+        .vehicle-info-grid .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+        }
+        
+        .vehicle-info-grid .info-label {
+            color: #666;
+        }
+        
+        .vehicle-info-grid .info-value {
+            font-weight: bold;
+            color: #1e1e2e;
+        }
+        
+        /* تاریخ‌ها در کادرهای رنگی */
+        .dates-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 3px;
+        }
+        
+        .date-box {
+            flex: 1;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 8px;
             display: flex;
             flex-direction: column;
             gap: 1px;
-            margin-bottom: 2px;
-            background: #f8f9fa;
-            padding: 2px 4px;
-            border-radius: 3px;
-            border-right: 2px solid #f39c12;
         }
         
-        .vehicle-info-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 9px;
+        .date-box.issue {
+            background: #e8f5e9;
+            border: 1px solid #81c784;
         }
         
-        .vehicle-info-row .label {
+        .date-box.validity {
+            background: #fff3e0;
+            border: 1px solid #ffb74d;
+        }
+        
+        .date-box .d-label {
+            font-size: 7px;
             color: #666;
         }
         
-        .vehicle-info-row .value {
-            font-weight: bold;
-            color: #1e1e2e;
-        }
-        
-        /* گرید اطلاعات */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1px 5px;
-            flex: 1;
-        }
-        
-        .info-item {
-            display: flex;
-            gap: 2px;
+        .date-box .d-value {
             font-size: 9px;
-            align-items: baseline;
-        }
-        
-        .info-label {
-            color: #666;
-        }
-        
-        .info-value {
             font-weight: bold;
-            color: #1e1e2e;
+            direction: ltr;
+            text-align: center;
         }
         
-        .info-value.small {
-            font-size: 8px;
+        .date-box.issue .d-value {
+            color: #2e7d32;
         }
         
-        .full-width {
-            grid-column: 1 / -1;
+        .date-box.validity .d-value {
+            color: #e65100;
         }
         
-        /* پلاک عریض در پایین سمت راست (زیر خوابگاه) */
+        /* پلاک عریض واقعی */
         .big-plate {
             display: flex;
             align-items: stretch;
             background: white;
             border: 2px solid #2c2c2c;
-            border-radius: 4px;
+            border-radius: 5px;
             overflow: hidden;
             direction: ltr;
-            height: 1.3cm;
+            height: 1.4cm;
             width: 100%;
             margin-top: auto;
         }
@@ -358,12 +219,12 @@
             align-items: center;
             justify-content: center;
             line-height: 1.1;
-            min-width: 16px;
+            min-width: 18px;
         }
         
         .big-plate .bp-flag {
-            width: 10px;
-            height: 6px;
+            width: 11px;
+            height: 7px;
             background: linear-gradient(to bottom, #239f40 33%, white 33%, white 66%, #da0000 66%);
             border-radius: 1px;
             margin-bottom: 2px;
@@ -374,7 +235,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: bold;
             color: #1a1a1a;
             gap: 3px;
@@ -383,31 +244,147 @@
         
         .big-plate .bp-code {
             border-right: 1.5px solid #2c2c2c;
-            padding: 0 4px;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #1a1a1a;
+            min-width: 22px;
+        }
+        
+        /* ========== بخش سمت چپ: عکس + مجاز + درب ========== */
+        .left-section {
+            flex-shrink: 0;
+            width: 2.8cm;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        
+        .driver-photo {
+            width: 2.8cm;
+            height: 3cm;
+            border-radius: 5px;
+            object-fit: cover;
+            border: 2px solid #f39c12;
+            background: #f0f0f0;
+        }
+        
+        .photo-placeholder {
+            width: 2.8cm;
+            height: 3cm;
+            border-radius: 5px;
+            background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
+            color: #888;
+            border: 2px dashed #f39c12;
             font-weight: bold;
-            color: #1a1a1a;
-            min-width: 18px;
+        }
+        
+        /* برچسب مجاز */
+        .status-badge {
+            text-align: center;
+            padding: 3px 4px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            letter-spacing: 2px;
+        }
+        
+        .status-badge.active {
+            background: #28a745;
+        }
+        
+        .status-badge.expired {
+            background: #e74c3c;
+        }
+        
+        /* کادر آبی کم‌رنگ برای درب ورود */
+        .entrance-gate-box {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            padding: 3px 4px;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1px;
+        }
+        
+        .gate-label {
+            font-size: 7px;
+            color: #666;
+        }
+        
+        .gate-value {
+            font-size: 9px;
+            font-weight: bold;
+            color: #0d47a1;
+        }
+        
+        /* کادر نارنجی برای توضیحات - عرض کامل */
+        .description-box {
+            margin: 4px 8px 0 8px;
+            background: #fff3cd;
+            border: 1.5px solid #f39c12;
+            border-radius: 5px;
+            padding: 3px 6px;
+            font-size: 8px;
+            line-height: 1.4;
+            color: #333;
+            min-height: 1.2cm;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .desc-title {
+            font-weight: bold;
+            color: #1e1e2e;
+            font-size: 8px;
+            margin-bottom: 1px;
+        }
+        
+        .desc-text {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* اطلاعات پایین (خوابگاه) */
+        .bottom-info {
+            padding: 2px 8px;
+            font-size: 8px;
+            color: #555;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .bottom-info strong {
+            color: #1e1e2e;
         }
         
         /* مسئول حفاظت فیزیکی */
         .security-official {
-            position: absolute;
-            bottom: 3px;
-            left: 8px;
-            font-size: 7px;
+            padding: 2px 8px 4px 8px;
+            font-size: 8px;
             color: #1e1e2e;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         .security-official .line {
-            display: block;
-            width: 35px;
+            flex: 1;
             border-top: 1px solid #1e1e2e;
-            margin-top: 1px;
+            max-width: 60px;
         }
         
         /* واترمارک */
@@ -416,12 +393,18 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 20px;
+            font-size: 22px;
             color: rgba(0,0,0,0.04);
             font-weight: bold;
             letter-spacing: 3px;
             pointer-events: none;
             white-space: nowrap;
+            z-index: 0;
+        }
+        
+        .id-card > * {
+            position: relative;
+            z-index: 1;
         }
         
         /* استایل چاپ */
@@ -460,64 +443,14 @@
         <!-- واترمارک -->
         <div class="watermark">AMIN</div>
         
-        <!-- هدر کارت -->
+        <!-- هدر کارت دو بخشی -->
         <div class="card-header">
             <div class="title">اداره حفاظت فیزیکی</div>
-            <div class="subtitle">کارت شناسایی تردد</div>
+            <div class="subtitle">کارت استفاده از پارکینگ</div>
         </div>
         
+        <!-- بدنه کارت -->
         <div class="card-body">
-            
-            <!-- ========== بخش سمت چپ: عکس + مجاز/تاریخ + درب/توضیحات ========== -->
-            <div class="left-section">
-                
-                <!-- عکس راننده -->
-                {% if vehicle.photo_path %}
-                <img src="{{ url_for('uploaded_file', filename=vehicle.photo_path.split('/')[-1], _external=True) }}" 
-                     alt="عکس"
-                     class="driver-photo">
-                {% else %}
-                <div class="photo-placeholder"></div>
-                {% endif %}
-                
-                <!-- ردیف هم‌سطح: مجاز + تاریخ صدور/اعتبار -->
-                <div class="status-date-row">
-                    {% if vehicle.is_expired() %}
-                    <div class="status-badge expired">منقضی</div>
-                    {% else %}
-                    <div class="status-badge active">مجاز</div>
-                    {% endif %}
-                    
-                    <div class="dates-box">
-                        <div class="date-row">
-                            <span class="date-label">صدور:</span>
-                            <span class="date-value issue" id="issueDate">-</span>
-                        </div>
-                        <div class="date-row">
-                            <span class="date-label">اعتبار:</span>
-                            <span class="date-value validity">{{ vehicle.get_shamsi_validity() }}</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- ردیف هم‌سطح: درب ورود + توضیحات -->
-                <div class="gate-desc-row">
-                    {% if vehicle.entrance_gate %}
-                    <div class="entrance-gate-box">
-                        <div class="gate-label">درب ورود</div>
-                        <div class="gate-value">{{ vehicle.entrance_gate }}</div>
-                    </div>
-                    {% endif %}
-                    
-                    {% if vehicle.description %}
-                    <div class="description-box">
-                        <div class="desc-title">📝 توضیحات</div>
-                        <div class="desc-text">{{ vehicle.description[:70] }}{% if vehicle.description|length > 70 %}...{% endif %}</div>
-                    </div>
-                    {% endif %}
-                </div>
-                
-            </div>
             
             <!-- ========== بخش سمت راست: اطلاعات + پلاک ========== -->
             <div class="right-section">
@@ -530,61 +463,35 @@
                 </div>
                 {% endif %}
                 
-                <!-- ستون عمودی نوع/رنگ/پلاک -->
-                <div class="vehicle-info-column">
-                    <div class="vehicle-info-row">
-                        <span class="label">نوع:</span>
-                        <span class="value">{{ vehicle.vehicle_type }}</span>
+                <!-- گرید اطلاعات خودرو -->
+                <div class="vehicle-info-grid">
+                    <div class="info-row">
+                        <span class="info-label">نوع:</span>
+                        <span class="info-value">{{ vehicle.vehicle_type }}</span>
                     </div>
-                    <div class="vehicle-info-row">
-                        <span class="label">رنگ:</span>
-                        <span class="value">{{ vehicle.color }}</span>
+                    <div class="info-row">
+                        <span class="info-label">رنگ:</span>
+                        <span class="info-value">{{ vehicle.color }}</span>
                     </div>
-                    <div class="vehicle-info-row">
-                        <span class="label">پلاک:</span>
-                        <span class="value" style="direction: ltr; font-size: 8px;">{{ vehicle.plate_1 }} {{ vehicle.plate_2 }} {{ vehicle.plate_3 }} | {{ vehicle.plate_4 }}</span>
+                    <div class="info-row" style="grid-column: 1 / -1;">
+                        <span class="info-label">پلاک:</span>
+                        <span class="info-value" style="direction: ltr;">{{ vehicle.plate_1 }} {{ vehicle.plate_2 }} {{ vehicle.plate_3 }} | {{ vehicle.plate_4 }}</span>
                     </div>
                 </div>
                 
-                <!-- گرید اطلاعات -->
-                <div class="info-grid">
-                    {% if vehicle.position %}
-                    <div class="info-item">
-                        <span class="info-label">سمت:</span>
-                        <span class="info-value small">{{ vehicle.position }}</span>
+                <!-- تاریخ‌ها در کادرهای رنگی -->
+                <div class="dates-row">
+                    <div class="date-box issue">
+                        <span class="d-label">صدور:</span>
+                        <span class="d-value" id="issueDate">-</span>
                     </div>
-                    {% endif %}
-                    
-                    {% if vehicle.student_id %}
-                    <div class="info-item">
-                        <span class="info-label">ش.دانش:</span>
-                        <span class="info-value">{{ vehicle.student_id }}</span>
+                    <div class="date-box validity">
+                        <span class="d-label">اعتبار:</span>
+                        <span class="d-value">{{ vehicle.get_shamsi_validity() }}</span>
                     </div>
-                    {% endif %}
-                    
-                    {% if vehicle.major %}
-                    <div class="info-item">
-                        <span class="info-label">رشته:</span>
-                        <span class="info-value small">{{ vehicle.major }}</span>
-                    </div>
-                    {% endif %}
-                    
-                    {% if vehicle.parking %}
-                    <div class="info-item">
-                        <span class="info-label">پارکینگ:</span>
-                        <span class="info-value">{{ vehicle.parking }}</span>
-                    </div>
-                    {% endif %}
-                    
-                    {% if vehicle.dormitory_status %}
-                    <div class="info-item full-width">
-                        <span class="info-label">خوابگاه:</span>
-                        <span class="info-value small">{{ vehicle.dormitory_status }}</span>
-                    </div>
-                    {% endif %}
                 </div>
                 
-                <!-- پلاک عریض در پایین (زیر خوابگاه) -->
+                <!-- پلاک عریض واقعی -->
                 <div class="big-plate">
                     <div class="bp-blue">
                         <div class="bp-flag"></div>
@@ -600,7 +507,50 @@
                 
             </div>
             
+            <!-- ========== بخش سمت چپ: عکس + مجاز + درب ========== -->
+            <div class="left-section">
+                
+                {% if vehicle.photo_path %}
+                <img src="{{ url_for('uploaded_file', filename=vehicle.photo_path.split('/')[-1], _external=True) }}" 
+                     alt="عکس"
+                     class="driver-photo">
+                {% else %}
+                <div class="photo-placeholder">عکس</div>
+                {% endif %}
+                
+                <!-- برچسب مجاز -->
+                {% if vehicle.is_expired() %}
+                <div class="status-badge expired">منقضی</div>
+                {% else %}
+                <div class="status-badge active">مجاز</div>
+                {% endif %}
+                
+                <!-- کادر آبی کم‌رنگ برای درب ورود -->
+                {% if vehicle.entrance_gate %}
+                <div class="entrance-gate-box">
+                    <div class="gate-label">درب ورود</div>
+                    <div class="gate-value">{{ vehicle.entrance_gate }}</div>
+                </div>
+                {% endif %}
+                
+            </div>
+            
         </div>
+        
+        <!-- کادر نارنجی برای توضیحات - عرض کامل -->
+        {% if vehicle.description %}
+        <div class="description-box">
+            <div class="desc-title">📝 توضیحات:</div>
+            <div class="desc-text">{{ vehicle.description[:120] }}{% if vehicle.description|length > 120 %}...{% endif %}</div>
+        </div>
+        {% endif %}
+        
+        <!-- اطلاعات پایین (خوابگاه) -->
+        {% if vehicle.dormitory_status %}
+        <div class="bottom-info">
+            <span>خوابگاه: <strong>{{ vehicle.dormitory_status }}</strong></span>
+        </div>
+        {% endif %}
         
         <!-- مسئول حفاظت فیزیکی -->
         <div class="security-official">
