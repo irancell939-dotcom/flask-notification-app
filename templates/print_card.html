@@ -46,9 +46,9 @@
             width: 10cm;
             height: 8cm;
             background: linear-gradient(135deg, #faf3e8 0%, #fff 100%);
-            border: 2px solid #1e1e2e;
-            border-radius: 10px;
-            padding: 8px;
+            border: 2.5px solid #1e1e2e;
+            border-radius: 8px;
+            padding: 6px 8px;
             position: relative;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -56,99 +56,175 @@
             direction: rtl;
         }
         
+        /* هدر کارت */
         .card-header {
             background: #1e1e2e;
             color: white;
-            padding: 4px 8px;
-            border-radius: 5px;
-            margin-bottom: 6px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-bottom: 5px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 9px;
         }
         
         .card-header .title {
             font-weight: bold;
+            font-size: 10px;
         }
         
         .card-header .subtitle {
             color: #f39c12;
-            font-size: 8px;
+            font-size: 9px;
+            font-weight: bold;
         }
         
+        /* بدنه کارت */
         .card-body {
             display: flex;
             gap: 6px;
-            height: calc(100% - 28px);
+            height: calc(100% - 35px);
         }
         
+        /* بخش عکس */
         .photo-section {
             flex-shrink: 0;
-            width: 2.2cm;
+            width: 2.4cm;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
         
         .photo {
-            width: 2.2cm;
-            height: 2.2cm;
+            width: 2.4cm;
+            height: 3cm;
             border-radius: 5px;
             object-fit: cover;
-            border: 1px solid #ddd;
+            border: 1.5px solid #f39c12;
             background: #f0f0f0;
         }
         
         .photo-placeholder {
-            width: 2.2cm;
-            height: 2.2cm;
+            width: 2.4cm;
+            height: 3cm;
             border-radius: 5px;
             background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 28px;
             color: #888;
-            border: 1px dashed #ccc;
+            border: 1.5px dashed #ccc;
         }
         
+        /* پلاک کوچک زیر عکس */
         .mini-plate {
+            display: flex;
+            align-items: stretch;
             background: white;
-            border: 1px solid #2c2c2c;
+            border: 1.5px solid #2c2c2c;
             border-radius: 3px;
-            padding: 2px;
-            text-align: center;
-            font-size: 7px;
+            overflow: hidden;
             direction: ltr;
-            font-weight: bold;
+            height: 18px;
         }
         
+        .mini-plate .mp-blue {
+            background: #0033a0;
+            color: white;
+            font-size: 5px;
+            padding: 1px 2px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            min-width: 14px;
+        }
+        
+        .mini-plate .mp-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            color: #1a1a1a;
+            gap: 2px;
+        }
+        
+        .mini-plate .mp-code {
+            border-right: 1px solid #2c2c2c;
+            padding: 0 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            font-weight: bold;
+            color: #1a1a1a;
+            min-width: 14px;
+        }
+        
+        /* بخش اطلاعات */
         .info-section {
             flex: 1;
-            font-size: 8px;
-            line-height: 1.5;
+            font-size: 9px;
+            line-height: 1.4;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         .driver-name {
             font-weight: bold;
-            font-size: 10px;
+            font-size: 11px;
             color: #1e1e2e;
-            margin-bottom: 3px;
-            border-bottom: 1px solid #f39c12;
+            margin-bottom: 2px;
+            border-bottom: 1.5px solid #f39c12;
             padding-bottom: 2px;
+            text-align: center;
         }
         
+        /* ستون عمودی نوع/رنگ/پلاک */
+        .vehicle-info-column {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+            margin-bottom: 2px;
+            background: #f8f9fa;
+            padding: 2px 4px;
+            border-radius: 3px;
+            border-right: 2px solid #f39c12;
+        }
+        
+        .vehicle-info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 8px;
+        }
+        
+        .vehicle-info-row .label {
+            color: #666;
+        }
+        
+        .vehicle-info-row .value {
+            font-weight: bold;
+            color: #1e1e2e;
+        }
+        
+        /* گرید اطلاعات */
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2px 6px;
+            gap: 1px 5px;
+            flex: 1;
         }
         
         .info-item {
             display: flex;
-            gap: 3px;
+            gap: 2px;
+            font-size: 8px;
+            align-items: baseline;
         }
         
         .info-label {
@@ -157,6 +233,7 @@
         
         .info-value {
             font-weight: bold;
+            color: #1e1e2e;
         }
         
         .info-value.small {
@@ -167,13 +244,29 @@
             grid-column: 1 / -1;
         }
         
+        /* فوتر کارت */
         .card-footer {
-            margin-top: 3px;
-            padding-top: 3px;
-            border-top: 1px dashed #ddd;
+            margin-top: 2px;
+            padding-top: 2px;
+            border-top: 1px dashed #ccc;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 8px;
+        }
+        
+        .footer-right {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+        
+        .issue-date {
+            font-size: 7px;
+        }
+        
+        .issue-date strong {
+            color: #2c3e50;
         }
         
         .validity {
@@ -186,9 +279,10 @@
         
         .status-badge {
             font-size: 7px;
-            padding: 1px 4px;
+            padding: 1px 5px;
             border-radius: 3px;
             color: white;
+            font-weight: bold;
         }
         
         .status-badge.active {
@@ -199,14 +293,58 @@
             background: #e74c3c;
         }
         
+        /* مسئول حفاظت فیزیکی */
+        .security-official {
+            position: absolute;
+            bottom: 3px;
+            left: 8px;
+            font-size: 7px;
+            color: #1e1e2e;
+            font-weight: bold;
+        }
+        
+        .security-official .line {
+            display: block;
+            width: 35px;
+            border-top: 1px solid #1e1e2e;
+            margin-top: 1px;
+        }
+        
+        /* واترمارک */
         .watermark {
             position: absolute;
-            bottom: 2px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            font-size: 6px;
-            color: #ccc;
-            letter-spacing: 1px;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 20px;
+            color: rgba(0,0,0,0.04);
+            font-weight: bold;
+            letter-spacing: 3px;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        
+        /* توضیحات پایین کارت */
+        .description-box {
+            width: 10cm;
+            margin-top: 8px;
+            background: white;
+            border: 1.5px solid #1e1e2e;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 10px;
+            line-height: 1.6;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .description-box .desc-title {
+            font-weight: bold;
+            color: #1e1e2e;
+            margin-bottom: 3px;
+            font-size: 11px;
+            border-bottom: 1px solid #f39c12;
+            padding-bottom: 2px;
         }
         
         /* استایل چاپ */
@@ -222,7 +360,15 @@
             
             .id-card {
                 box-shadow: none;
-                border: 2px solid #000;
+                border: 2.5px solid #000;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            .description-box {
+                box-shadow: none;
+                border: 1.5px solid #000;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
                 color-adjust: exact;
@@ -242,9 +388,12 @@
     </div>
     
     <div class="id-card">
+        <!-- واترمارک -->
+        <div class="watermark">AMIN</div>
+        
         <!-- هدر کارت -->
         <div class="card-header">
-            <div class="title">سامانه اطلاع رسانی امین</div>
+            <div class="title">اداره حفاظت فیزیکی</div>
             <div class="subtitle">کارت شناسایی تردد</div>
         </div>
         
@@ -256,11 +405,18 @@
                      alt="عکس"
                      class="photo">
                 {% else %}
-                <div class="photo-placeholder">👤</div>
+                <div class="photo-placeholder"></div>
                 {% endif %}
                 
+                <!-- پلاک کوچک با طراحی واقعی -->
                 <div class="mini-plate">
-                    {{ vehicle.plate_1 }} {{ vehicle.plate_2 }} {{ vehicle.plate_3 }} | {{ vehicle.plate_4 }}
+                    <div class="mp-blue">IR</div>
+                    <div class="mp-main">
+                        <span>{{ vehicle.plate_1 }}</span>
+                        <span>{{ vehicle.plate_2 }}</span>
+                        <span>{{ vehicle.plate_3 }}</span>
+                    </div>
+                    <div class="mp-code">{{ vehicle.plate_4 }}</div>
                 </div>
             </div>
             
@@ -268,6 +424,23 @@
             <div class="info-section">
                 <div class="driver-name">{{ vehicle.driver_name }}</div>
                 
+                <!-- ستون عمودی نوع/رنگ/پلاک -->
+                <div class="vehicle-info-column">
+                    <div class="vehicle-info-row">
+                        <span class="label">نوع:</span>
+                        <span class="value">{{ vehicle.vehicle_type }}</span>
+                    </div>
+                    <div class="vehicle-info-row">
+                        <span class="label">رنگ:</span>
+                        <span class="value">{{ vehicle.color }}</span>
+                    </div>
+                    <div class="vehicle-info-row">
+                        <span class="label">پلاک:</span>
+                        <span class="value" style="direction: ltr; font-size: 7px;">{{ vehicle.plate_1 }} {{ vehicle.plate_2 }} {{ vehicle.plate_3 }} | {{ vehicle.plate_4 }}</span>
+                    </div>
+                </div>
+                
+                <!-- گرید اطلاعات -->
                 <div class="info-grid">
                     {% if vehicle.national_id %}
                     <div class="info-item">
@@ -275,16 +448,6 @@
                         <span class="info-value">{{ vehicle.national_id }}</span>
                     </div>
                     {% endif %}
-                    
-                    <div class="info-item">
-                        <span class="info-label">نوع:</span>
-                        <span class="info-value">{{ vehicle.vehicle_type }}</span>
-                    </div>
-                    
-                    <div class="info-item">
-                        <span class="info-label">رنگ:</span>
-                        <span class="info-value">{{ vehicle.color }}</span>
-                    </div>
                     
                     {% if vehicle.position %}
                     <div class="info-item">
@@ -329,10 +492,17 @@
                     {% endif %}
                 </div>
                 
+                <!-- فوتر کارت -->
                 <div class="card-footer">
-                    <div class="validity">
-                        <span class="info-label">اعتبار تا:</span>
-                        <strong>{{ vehicle.get_shamsi_validity() }}</strong>
+                    <div class="footer-right">
+                        <div class="issue-date">
+                            <span class="info-label">تاریخ صدور:</span>
+                            <strong id="issueDate">-</strong>
+                        </div>
+                        <div class="validity">
+                            <span class="info-label">اعتبار تا:</span>
+                            <strong>{{ vehicle.get_shamsi_validity() }}</strong>
+                        </div>
                     </div>
                     {% if vehicle.is_expired() %}
                     <div class="status-badge expired">منقضی</div>
@@ -343,14 +513,49 @@
             </div>
         </div>
         
-        <div class="watermark">AMIN INFO SYSTEM</div>
+        <!-- مسئول حفاظت فیزیکی -->
+        <div class="security-official">
+            مسئول حفاظت فیزیکی
+            <span class="line"></span>
+        </div>
     </div>
     
+    <!-- توضیحات پایین کارت -->
+    {% if vehicle.description %}
+    <div class="description-box">
+        <div class="desc-title">📝 توضیحات:</div>
+        <div>{{ vehicle.description }}</div>
+    </div>
+    {% endif %}
+    
     <script>
-        // باز شدن خودکار پنجره چاپ
+        // تبدیل تاریخ میلادی به شمسی
+        function toJalali(gy, gm, gd) {
+            var g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+            var jy = (gy <= 1600) ? 0 : 979;
+            gy -= (gy <= 1600) ? 621 : 1600;
+            var gy2 = (gm > 2) ? (gy + 1) : gy;
+            var days = 365 * gy + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100)
+                     + Math.floor((gy2 + 399) / 400) - 80 + gd + g_d_m[gm - 1];
+            jy += 33 * Math.floor(days / 12053);
+            days %= 12053;
+            jy += 4 * Math.floor(days / 1461);
+            days %= 1461;
+            if (days > 365) {
+                jy += Math.floor((days - 1) / 365);
+                days = (days - 1) % 365;
+            }
+            var jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+            var jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+            return [jy, jm, jd];
+        }
+        
+        // نمایش تاریخ صدور (تاریخ امروز مرورگر کاربر)
         window.onload = function() {
-            // می‌توانید این خط را فعال کنید تا به محض باز شدن صفحه، پنجره چاپ باز شود
-            // window.print();
+            var now = new Date();
+            var j = toJalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+            var dateStr = j[0] + '/' + j[1].toString().padStart(2, '0') + '/' + j[2].toString().padStart(2, '0');
+            document.getElementById('issueDate').textContent = dateStr;
         };
     </script>
 </body>
