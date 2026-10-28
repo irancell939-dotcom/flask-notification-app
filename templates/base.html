@@ -2,327 +2,388 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{% block title %}سیستم اطلاع‌رسانی{% endblock %}</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
             font-family: Tahoma, Arial, sans-serif;
-            background-color: #f4f6f9;
-            line-height: 1.6;
-            color: #333;
-            font-size: 14px;
+            background-color: #faf3e8;
+            color: #2c2c2c;
+            font-size: 16px;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* ========== هدر ========== */
-        header {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        .app-header {
+            background-color: #1e1e2e;
             color: white;
-            padding: 18px 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
+            padding: 15px 15px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
-        .site-title {
+        .header-title {
             font-size: 20px;
             font-weight: bold;
+            flex: 1;
+            text-align: center;
+        }
+
+        .header-title a {
             color: white;
             text-decoration: none;
         }
 
-        .site-title:hover {
-            color: #f1c40f;
-        }
-
-        .user-info {
+        .hamburger-btn {
+            background: none;
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 22px;
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            justify-content: center;
+            transition: all 0.2s;
         }
 
-        .user-name {
-            font-size: 14px;
+        .hamburger-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.6);
         }
 
-        .role-badge {
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 12px;
+        .header-spacer {
+            width: 44px;
+        }
+
+        /* ========== منوی کشویی (Sidebar) ========== */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 280px;
+            max-width: 85%;
+            height: 100vh;
+            background-color: #1a1a2e;
+            z-index: 300;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 15px 20px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 10px;
+        }
+
+        .sidebar-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 18px;
             font-weight: bold;
         }
 
-        .role-badge.admin {
-            background-color: #e74c3c;
+        .sidebar-role {
+            background-color: #f39c12;
+            color: #1a1a2e;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
         }
 
-        .role-badge.user {
-            background-color: #3498db;
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
         }
 
-        .logout-btn {
-            background-color: #c0392b;
+        .sidebar-menu li a {
+            display: block;
+            padding: 16px 25px;
+            color: #b0b0c0;
+            text-decoration: none;
+            font-size: 17px;
+            transition: all 0.2s;
+            border-right: 3px solid transparent;
+        }
+
+        .sidebar-menu li a:hover,
+        .sidebar-menu li a.active {
+            background-color: rgba(255,255,255,0.05);
             color: white;
-            padding: 6px 14px;
-            border-radius: 5px;
+            border-right-color: #f39c12;
+        }
+
+        .sidebar-menu li.logout a {
+            color: #e74c3c;
+            margin-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+        }
+
+        /* ========== محتوای اصلی ========== */
+        .main-content {
+            padding: 20px 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+        }
+
+        /* ========== کارت اطلاعیه ========== */
+        .notification-card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: relative;
+        }
+
+        .notification-card .card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .notification-card .card-title-area {
+            flex: 1;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .notification-card .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c2c2c;
+            text-decoration: none;
+            line-height: 1.6;
+        }
+
+        .notification-card .card-title:hover {
+            color: #f39c12;
+        }
+
+        .badge-important {
+            background-color: #e63946;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .badge-days {
+            background-color: #2d6a4f;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .badge-days.expired {
+            background-color: #6c757d;
+        }
+
+        .badge-days.today {
+            background-color: #f39c12;
+        }
+
+        /* منوی سه‌نقطه */
+        .card-menu-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #888;
+            cursor: pointer;
+            padding: 5px;
+            line-height: 1;
+        }
+
+        .card-actions {
+            display: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #eee;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .card-actions.show {
+            display: flex;
+        }
+
+        .card-actions a {
+            padding: 6px 12px;
+            border-radius: 6px;
             text-decoration: none;
             font-size: 13px;
-            transition: background-color 0.3s;
-            white-space: nowrap;
+            background: #f0f0f0;
+            color: #333;
         }
 
-        .logout-btn:hover {
-            background-color: #a93226;
+        .card-actions a.danger {
+            background: #fde8e8;
+            color: #c0392b;
         }
 
-        /* ========== نوار ناوبری ========== */
-        nav {
-            background-color: #34495e;
-            padding: 10px 25px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            overflow-x: auto;
-        }
-
-        .nav-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        nav a {
-            color: #ecf0f1;
-            text-decoration: none;
-            padding: 8px 14px;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-
-        nav a:hover {
-            background-color: #2c3e50;
-            color: #f1c40f;
-        }
-
-        nav a.highlight {
-            background-color: #f39c12;
-            color: white;
-            font-weight: bold;
-        }
-
-        nav a.highlight:hover {
-            background-color: #e67e22;
+        .card-actions a.warning {
+            background: #fff3cd;
+            color: #856404;
         }
 
         /* ========== پیام‌های فلش ========== */
         .flash-messages {
-            max-width: 1200px;
-            margin: 15px auto;
+            max-width: 800px;
+            margin: 0 auto 15px;
             padding: 0 15px;
         }
 
         .alert {
-            padding: 12px 18px;
-            border-radius: 6px;
-            margin-bottom: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 10px;
             font-size: 14px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            text-align: center;
         }
 
         .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-right: 4px solid #dc3545;
+            background-color: #fde8e8;
+            color: #c0392b;
         }
 
         .alert-success {
             background-color: #d4edda;
             color: #155724;
-            border-right: 4px solid #28a745;
         }
 
         .alert-info {
             background-color: #d1ecf1;
             color: #0c5460;
-            border-right: 4px solid #17a2b8;
         }
 
-        /* ========== کانتینر اصلی ========== */
-        .container {
-            max-width: 1200px;
-            margin: 15px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        /* ========== حالت خالی ========== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+            font-size: 16px;
         }
 
-        /* ========== ریسپانسیو برای موبایل ========== */
-        @media (max-width: 768px) {
-            body {
-                font-size: 13px;
+        /* ========== دسکتاپ ========== */
+        @media (min-width: 769px) {
+            .main-content {
+                padding: 30px 20px;
             }
-
-            header {
-                padding: 12px 15px;
-            }
-
-            .header-content {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-
-            .site-title {
-                font-size: 17px;
-                text-align: center;
-            }
-
-            .user-info {
-                justify-content: center;
-                gap: 8px;
-                font-size: 13px;
-            }
-
-            .user-name {
-                font-size: 13px;
-            }
-
-            .logout-btn {
-                padding: 6px 12px;
-                font-size: 12px;
-            }
-
-            /* نوار ناوبری در موبایل به صورت افقی قابل اسکرول */
-            nav {
-                padding: 8px 10px;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .nav-content {
-                flex-wrap: nowrap;
-                gap: 5px;
-                padding-bottom: 4px;
-            }
-
-            nav a {
-                padding: 8px 12px;
-                font-size: 13px;
-                flex-shrink: 0;
-            }
-
-            /* فلش مسیج‌ها */
-            .flash-messages {
-                padding: 0 10px;
-                margin: 10px auto;
-            }
-
-            .alert {
-                padding: 10px 14px;
-                font-size: 13px;
-            }
-
-            /* کانتینر */
-            .container {
-                margin: 10px 8px;
-                padding: 15px;
-                border-radius: 6px;
-            }
-
-            /* بهبود نمایش جداول در موبایل */
-            table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-        }
-
-        /* ========== ریسپانسیو برای تبلت ========== */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .container {
-                margin: 15px 15px;
-                padding: 18px;
-            }
-        }
-
-        /* ========== اسکرول‌بار زیبا برای ناوبری موبایل ========== */
-        nav::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        nav::-webkit-scrollbar-track {
-            background: #2c3e50;
-        }
-
-        nav::-webkit-scrollbar-thumb {
-            background: #f39c12;
-            border-radius: 2px;
-        }
-
-        /* جلوگیری از زوم شدن در iOS هنگام فوکوس روی input */
-        @media (max-width: 768px) {
-            input, select, textarea {
-                font-size: 16px !important;
+            .notification-card {
+                padding: 22px;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <a href="{{ url_for('index') }}" class="site-title">سیستم اطلاع‌رسانی</a>
 
-            {% if current_user.is_authenticated %}
-            <div class="user-info">
-                <span class="user-name">{{ current_user.full_name }}</span>
-                {% if current_user.is_admin %}
-                    <span class="role-badge admin">مدیر</span>
-                {% else %}
-                    <span class="role-badge user">کاربر</span>
-                {% endif %}
-                <a href="{{ url_for('logout') }}" class="logout-btn">خروج</a>
-            </div>
-            {% endif %}
+    <!-- هدر -->
+    <header class="app-header">
+        <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="منو">☰</button>
+        <div class="header-title">
+            <a href="{{ url_for('index') }}">سیستم اطلاع‌رسانی</a>
         </div>
+        <div class="header-spacer"></div>
     </header>
 
+    <!-- Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- منوی کشویی -->
     {% if current_user.is_authenticated %}
-    <nav>
-        <div class="nav-content">
-            <a href="{{ url_for('index') }}">صفحه اصلی</a>
-            <a href="{{ url_for('vehicles') }}">تردد خودرویی</a>
-            <a href="{{ url_for('archive') }}">بایگانی</a>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-user">
+                <span>{{ current_user.full_name }}</span>
+                {% if current_user.is_admin %}
+                    <span class="sidebar-role">مدیر</span>
+                {% else %}
+                    <span class="sidebar-role" style="background:#3498db; color:white;">کاربر</span>
+                {% endif %}
+            </div>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('index') }}">صفحه اصلی</a></li>
+            <li><a href="{{ url_for('vehicles') }}">تردد خودرویی</a></li>
+            <li><a href="{{ url_for('archive') }}">بایگانی</a></li>
 
             {% if current_user.is_admin %}
-                <a href="{{ url_for('pending_notifications') }}">در انتظار تایید</a>
-                <a href="{{ url_for('add_item') }}">افزودن اطلاعیه</a>
-                <a href="{{ url_for('add_vehicle') }}">افزودن خودرو</a>
-                <a href="{{ url_for('import_vehicles_excel') }}" class="highlight">ورود/خروج اکسل خودرو</a>
-                <a href="{{ url_for('manage_users') }}">مدیریت کاربران</a>
+                <li><a href="{{ url_for('pending_notifications') }}">در انتظار تایید</a></li>
+                <li><a href="{{ url_for('add_item') }}">افزودن اطلاعیه</a></li>
+                <li><a href="{{ url_for('add_vehicle') }}">افزودن خودرو</a></li>
+                <li><a href="{{ url_for('import_vehicles_excel') }}">ورود/خروج اکسل خودرو</a></li>
+                <li><a href="{{ url_for('manage_users') }}">مدیریت کاربران</a></li>
             {% elif current_user.can_add_notification %}
-                <a href="{{ url_for('add_item') }}">ثبت اطلاعیه</a>
+                <li><a href="{{ url_for('add_item') }}">ثبت اطلاعیه</a></li>
             {% endif %}
-        </div>
-    </nav>
+
+            <li class="logout"><a href="{{ url_for('logout') }}">خروج</a></li>
+        </ul>
+    </aside>
     {% endif %}
 
+    <!-- پیام‌ها -->
     <div class="flash-messages">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -333,8 +394,31 @@
         {% endwith %}
     </div>
 
-    <div class="container">
+    <!-- محتوای صفحه -->
+    <div class="main-content">
         {% block content %}{% endblock %}
     </div>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        function toggleCardActions(id) {
+            const el = document.getElementById('actions-' + id);
+            if (el) el.classList.toggle('show');
+        }
+
+        // بستن منو با کلید Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('sidebar').classList.remove('active');
+                document.getElementById('sidebarOverlay').classList.remove('active');
+            }
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
 </body>
 </html>
