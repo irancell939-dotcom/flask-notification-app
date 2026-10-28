@@ -123,9 +123,9 @@
     </div>
 </div>
 
-<!-- تاریخ ثبت -->
+<!-- تاریخ ثبت با تبدیل شمسی مرورگر -->
 <div style="text-align: center; color: #888; font-size: 13px; margin: 15px 0;">
-    تاریخ ثبت: {{ vehicle.get_iso_created() }}
+    تاریخ ثبت: <span class="jalali-date" data-iso="{{ vehicle.get_iso_created() }}">در حال بارگذاری...</span>
 </div>
 
 {% if vehicle.description %}
@@ -151,7 +151,7 @@
     
     {% for v in vehicle.violations|sort(attribute='created_at', reverse=true) %}
         <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-right: 4px solid #e74c3c;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 5px;">
                 <span style="font-weight: bold; color: #2c3e50; font-size: 14px;">
                     {% if v.reporter %}
                         {{ v.reporter.full_name if v.reporter.full_name else v.reporter.username }}
@@ -159,7 +159,7 @@
                         کاربر حذف شده
                     {% endif %}
                 </span>
-                <span style="color: #888; font-size: 12px;">{{ v.get_iso_created() }}</span>
+                <span class="jalali-date" data-iso="{{ v.get_iso_created() }}" style="color: #888; font-size: 12px;">در حال بارگذاری...</span>
             </div>
             <p style="margin: 0; color: #555; line-height: 1.6;">{{ v.description }}</p>
             
