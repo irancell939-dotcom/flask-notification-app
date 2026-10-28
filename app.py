@@ -5,7 +5,6 @@ from config import Config
 from datetime import datetime
 import jdatetime
 import os
-import json
 import csv
 import io
 
@@ -359,6 +358,153 @@ def delete_vehicle(id):
     flash('خودرو حذف شد', 'success')
     return redirect(url_for('vehicles'))
 
+# ========== Import/Export خودرو با اکسل ==========
+@app.route('/vehicles/export_excel')
+@login_required
+def export_vehicles_excel():
+    if not current_user.is_admin:
+        flash('فقط مدیر می‌تواند فایل اکسل دریافت کند', 'error')
+        return redirect(url_for('vehicles'))
+    
+    vehicles = Vehicle.query.order_by(Vehicle.created_at.desc()).all()
+    output = io.StringIO()
+    
+    # BOM برای نمایش صحیح فارسی در اکسل
+    output.write('\ufeff')
+    
+    fieldnames = [
+        'plate_1', 'plate_2', 'plate_3', 'plate_4',
+        'vehicle_type', 'color', 'driver_name', 'position',
+        'student_id', 'major', 'phone', 'parking',
+        'validity_date', 'description', 'entrance_gate',
+        'referrer', 'archive_location'
+    ]
+    
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+    
+    for v in vehicles:
+        writer.writerow({
+            'plate_1': v.plate_1,
+            'plate_2': v.plate_2,
+            'plate_3': v.plate_3,
+            'plate_4': v.plate_4,
+            'vehicle_type': v.vehicle_type,
+            'color': v.color,
+            'driver_name': v.driver_name,
+            'position': v.position or '',
+            'student_id': v.student_id or '',
+            'major': v.major or '',
+            'phone': v.phone,
+            'parking': v.parking or '',
+            'validity_date': v.get_shamsi_validity(),
+            'description': v.description or '',
+            'entrance_gate': v.entrance_gate or '',
+            'referrer': v.referrer or '',
+            'archive_location': v.archive_location or ''
+        })
+    
+    filename = f"vehicles_template_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    return Response(
+        output.getvalue(),
+        mimetype='text/csv; charset=utf-8',
+        headers={'Content-Disposition': f'attachment; filename={filename}'}
+    )
+
+
+@app.route('/vehicles/import_excel', methods=['GET', 'POST'])
+@login_required
+def import_vehicles_excel():
+    if not current_user.is_admin:
+        flash('فقط مدیر می‌تواند فایل اکسل بارگذاری کند', 'error')
+        return redirect(url_for('vehicles'))
+    
+    if request.method == 'POST':
+        file = request.files.get('excel_file')
+        if not file or file.filename == '':
+            flash('لطفاً یک فایل انتخاب کنید', 'error')
+            return redirect(url_for('import_vehicles_excel'))
+        
+        if not file.filename.lower().endswith(('.csv', '.xlsx', '.xls')):
+            flash('فقط فایل‌های CSV یا Excel مجاز هستند', 'error')
+            return redirect(url_for('import_vehicles_excel'))
+        
+        try:
+            # خواندن محتوا - پشتیبانی از UTF-8 با BOM
+            content = file.stream.read().decode('utf-8-sig')
+            reader = csv.DictReader(io.StringIO(content))
+            
+            added = 0
+            errors = []
+            row_num = 1
+            
+            required_fields = ['plate_1', 'plate_2', 'plate_3', 'plate_4', 
+                             'vehicle_type', 'color', 'driver_name', 'phone', 'validity_date']
+            
+            for row in reader:
+                row_num += 1
+                try:
+                    # بررسی فیلدهای اجباری
+                    missing = [f for f in required_fields if not row.get(f, '').strip()]
+                    if missing:
+                        errors.append(f"ردیف {row_num}: فیلدهای اجباری خالی است: {', '.join(missing)}")
+                        continue
+                    
+                    # تبدیل تاریخ شمسی به میلادی
+                    validity_date = jdatetime.datetime.strptime(
+                        row['validity_date'].strip(), '%Y/%m/%d'
+                    ).togregorian().date()
+                    
+                    vehicle = Vehicle(
+                        plate_1=row['plate_1'].strip(),
+                        plate_2=row['plate_2'].strip(),
+                        plate_3=row['plate_3'].strip(),
+                        plate_4=row['plate_4'].strip(),
+                        vehicle_type=row['vehicle_type'].strip(),
+                        color=row['color'].strip(),
+                        driver_name=row['driver_name'].strip(),
+                        position=row.get('position', '').strip() or None,
+                        student_id=row.get('student_id', '').strip() or None,
+                        major=row.get('major', '').strip() or None,
+                        phone=row['phone'].strip(),
+                        parking=row.get('parking', '').strip() or None,
+                        validity_date=validity_date,
+                        description=row.get('description', '').strip() or None,
+                        entrance_gate=row.get('entrance_gate', '').strip() or None,
+                        referrer=row.get('referrer', '').strip() or None,
+                        archive_location=row.get('archive_location', '').strip() or None
+                    )
+                    db.session.add(vehicle)
+                    added += 1
+                except ValueError as e:
+                    errors.append(f"ردیف {row_num}: تاریخ نامعتبر (فرمت صحیح: 1403/01/15)")
+                except Exception as e:
+                    errors.append(f"ردیف {row_num}: خطا - {str(e)}")
+            
+            if added > 0:
+                db.session.commit()
+                flash(f'{added} خودرو با موفقیت اضافه شد', 'success')
+            
+            if errors:
+                for err in errors[:10]:  # نمایش حداکثر ۱۰ خطا
+                    flash(err, 'error')
+                if len(errors) > 10:
+                    flash(f'... و {len(errors) - 10} خطای دیگر', 'error')
+            
+            if added == 0 and errors:
+                return redirect(url_for('import_vehicles_excel'))
+            
+            return redirect(url_for('vehicles'))
+            
+        except UnicodeDecodeError:
+            flash('فایل باید با فرمت UTF-8 ذخیره شده باشد. در اکسل: Save As → CSV UTF-8', 'error')
+            return redirect(url_for('import_vehicles_excel'))
+        except Exception as e:
+            flash(f'خطا در خواندن فایل: {str(e)}', 'error')
+            return redirect(url_for('import_vehicles_excel'))
+    
+    return render_template('import_vehicles.html')
+
 # ========== تخلفات ==========
 @app.route('/violation/add/<int:vehicle_id>', methods=['POST'])
 @login_required
@@ -473,88 +619,8 @@ def manage_users():
     users = User.query.all()
     return render_template('manage_users.html', users=users)
 
-# ========== پشتیبان‌گیری از دیتابیس (Backup) ==========
-@app.route('/backup')
-@login_required
-def backup_page():
-    if not current_user.is_admin:
-        flash('شما دسترسی به این بخش را ندارید', 'error')
-        return redirect(url_for('index'))
-    
-    tables = [table.name for table in db.metadata.sorted_tables]
-    return render_template('backup.html', tables=tables)
-
-@app.route('/backup/download_json', methods=['POST'])
-@login_required
-def backup_download_json():
-    if not current_user.is_admin:
-        abort(403)
-    
-    backup_data = {
-        "meta": {
-            "created_at": datetime.now().isoformat(),
-            "database_type": "PostgreSQL (Neon)" if "postgresql" in app.config.get('SQLALCHEMY_DATABASE_URI', '') else "SQLite"
-        },
-        "tables": {}
-    }
-    
-    for table in db.metadata.sorted_tables:
-        rows = db.session.execute(db.select(table)).mappings().all()
-        table_data = []
-        for row in rows:
-            row_dict = {}
-            for key, value in row.items():
-                if isinstance(value, (datetime, jdatetime.date, jdatetime.datetime)):
-                    row_dict[key] = value.isoformat() if hasattr(value, 'isoformat') else str(value)
-                else:
-                    row_dict[key] = value
-            table_data.append(row_dict)
-        backup_data["tables"][table.name] = table_data
-        
-    json_str = json.dumps(backup_data, ensure_ascii=False, indent=2, default=str)
-    filename = f"full_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-    
-    return Response(
-        json_str,
-        mimetype="application/json",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
-    )
-
-@app.route('/backup/download_csv/<table_name>', methods=['POST'])
-@login_required
-def backup_download_csv(table_name):
-    if not current_user.is_admin:
-        abort(403)
-        
-    table = db.metadata.tables.get(table_name)
-    if not table:
-        abort(404)
-        
-    rows = db.session.execute(db.select(table)).mappings().all()
-    output = io.StringIO()
-    output.write('\ufeff') # BOM for correct Persian display in Excel
-    
-    if rows:
-        writer = csv.DictWriter(output, fieldnames=rows[0].keys())
-        writer.writeheader()
-        for row in rows:
-            clean_row = {}
-            for k, v in row.items():
-                if isinstance(v, (datetime, jdatetime.date, jdatetime.datetime)):
-                    clean_row[k] = v.isoformat() if hasattr(v, 'isoformat') else str(v)
-                else:
-                    clean_row[k] = v
-            writer.writerow(clean_row)
-            
-    filename = f"{table_name}_{datetime.now().strftime('%Y%m%d')}.csv"
-    return Response(
-        output.getvalue(),
-        mimetype="text/csv; charset=utf-8",
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
-    )
-
-# ========== راه‌اندازی و اجرا ==========
+# ========== راه‌اندازی ==========
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all() # فقط جداول را می‌سازد، کاربر پیش‌فرض ایجاد نمی‌کند
+        db.create_all()
     app.run(debug=True, host='0.0.0.0', port=5000)
