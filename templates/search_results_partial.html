@@ -1,49 +1,41 @@
 {% if notifications %}
-    <div class="row">
-        {% for notification in notifications %}
-        <div class="col-md-6 col-lg-4 mb-3">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <h5 class="card-title mb-0">
-                            <a href="{{ url_for('view_item', item_id=notification.id) }}" class="text-decoration-none text-dark">
-                                {% if notification.is_important %}
-                                <span class="badge bg-danger me-2">مهم</span>
-                                {% endif %}
-                                {{ notification.title }}
-                            </a>
-                        </h5>
-                        {% if current_user.is_admin %}
-                        <div class="dropdown">
-                            <button class="btn btn-link btn-sm text-muted" type="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{{ url_for('edit_item', item_id=notification.id) }}">ویرایش</a></li>
-                                <li><a class="dropdown-item text-danger" href="{{ url_for('delete_item', item_id=notification.id) }}" onclick="return confirm('آیا از حذف این مورد اطمینان دارید؟')">حذف</a></li>
-                            </ul>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="mt-2 text-end">
-                        <small class="text-muted">
-                            {% set days_left = (notification.expiry_date - datetime.now().date()).days %}
-                            {% if days_left > 0 %}
-                                <span class="badge bg-success">{{ days_left }} روز مانده</span>
-                            {% elif days_left == 0 %}
-                                <span class="badge bg-warning text-dark">امروز آخرین روز است</span>
-                            {% else %}
-                                <span class="badge bg-secondary">منقضی شده</span>
-                            {% endif %}
-                        </small>
-                    </div>
+    {% for notification in notifications %}
+        {% set days_left = (notification.expiry_date - datetime.now().date()).days %}
+        
+        <div class="notification-card">
+            <div class="card-top">
+                <div class="card-title-area">
+                    {% if notification.is_important %}
+                        <span class="badge-important">مهم</span>
+                    {% endif %}
+                    <a href="{{ url_for('view_item', item_id=notification.id) }}" class="card-title">
+                        {{ notification.title }}
+                    </a>
                 </div>
+
+                {% if current_user.is_admin %}
+                    <div style="display: flex; gap: 5px;">
+                        <a href="{{ url_for('edit_item', item_id=notification.id) }}" style="background: #f39c12; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;">
+                            ویرایش
+                        </a>
+                        <a href="{{ url_for('delete_item', item_id=notification.id) }}" style="background: #e74c3c; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;" onclick="return confirm('آیا از حذف مطمئن هستید؟')">
+                            حذف
+                        </a>
+                    </div>
+                {% endif %}
             </div>
+
+            {% if days_left > 0 %}
+                <span class="badge-days">{{ days_left }} روز مانده</span>
+            {% elif days_left == 0 %}
+                <span class="badge-days today">امروز آخرین روز است</span>
+            {% else %}
+                <span class="badge-days expired">منقضی شده</span>
+            {% endif %}
         </div>
-        {% endfor %}
-    </div>
+    {% endfor %}
 {% else %}
-    <div class="alert alert-info text-center">
+    <div class="empty-state">
         هیچ نتیجه‌ای یافت نشد.
     </div>
 {% endif %}
