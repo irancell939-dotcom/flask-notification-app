@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>کارت شناسایی - {{ vehicle.driver_name }}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: Tahoma, Arial, sans-serif;
+            background: #e0e0e0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .print-controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .print-controls button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: Tahoma;
+        }
+        
+        .print-controls button:hover {
+            background: #2980b9;
+        }
+        
+        /* کارت شناسایی با ابعاد دقیق 10x8 سانتی‌متر */
+        .id-card {
+            width: 10cm;
+            height: 8cm;
+            background: linear-gradient(135deg, #faf3e8 0%, #fff 100%);
+            border: 2px solid #1e1e2e;
+            border-radius: 10px;
+            padding: 8px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-family: Tahoma, Arial, sans-serif;
+            direction: rtl;
+        }
+        
+        .card-header {
+            background: #1e1e2e;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 5px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 9px;
+        }
+        
+        .card-header .title {
+            font-weight: bold;
+        }
+        
+        .card-header .subtitle {
+            color: #f39c12;
+            font-size: 8px;
+        }
+        
+        .card-body {
+            display: flex;
+            gap: 6px;
+            height: calc(100% - 28px);
+        }
+        
+        .photo-section {
+            flex-shrink: 0;
+            width: 2.2cm;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .photo {
+            width: 2.2cm;
+            height: 2.2cm;
+            border-radius: 5px;
+            object-fit: cover;
+            border: 1px solid #ddd;
+            background: #f0f0f0;
+        }
+        
+        .photo-placeholder {
+            width: 2.2cm;
+            height: 2.2cm;
+            border-radius: 5px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #888;
+            border: 1px dashed #ccc;
+        }
+        
+        .mini-plate {
+            background: white;
+            border: 1px solid #2c2c2c;
+            border-radius: 3px;
+            padding: 2px;
+            text-align: center;
+            font-size: 7px;
+            direction: ltr;
+            font-weight: bold;
+        }
+        
+        .info-section {
+            flex: 1;
+            font-size: 8px;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+        
+        .driver-name {
+            font-weight: bold;
+            font-size: 10px;
+            color: #1e1e2e;
+            margin-bottom: 3px;
+            border-bottom: 1px solid #f39c12;
+            padding-bottom: 2px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px 6px;
+        }
+        
+        .info-item {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .info-label {
+            color: #666;
+        }
+        
+        .info-value {
+            font-weight: bold;
+        }
+        
+        .info-value.small {
+            font-size: 7px;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .card-footer {
+            margin-top: 3px;
+            padding-top: 3px;
+            border-top: 1px dashed #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .validity {
+            font-size: 7px;
+        }
+        
+        .validity strong {
+            color: #28a745;
+        }
+        
+        .status-badge {
+            font-size: 7px;
+            padding: 1px 4px;
+            border-radius: 3px;
+            color: white;
+        }
+        
+        .status-badge.active {
+            background: #28a745;
+        }
+        
+        .status-badge.expired {
+            background: #e74c3c;
+        }
+        
+        .watermark {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 6px;
+            color: #ccc;
+            letter-spacing: 1px;
+        }
+        
+        /* استایل چاپ */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .print-controls {
+                display: none;
+            }
+            
+            .id-card {
+                box-shadow: none;
+                border: 2px solid #000;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            
+            @page {
+                size: auto;
+                margin: 10mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-controls">
+        <button onclick="window.print()">🖨️ چاپ کارت</button>
+        <button onclick="window.close()">بستن</button>
+    </div>
+    
+    <div class="id-card">
+        <!-- هدر کارت -->
+        <div class="card-header">
+            <div class="title">سامانه اطلاع رسانی امین</div>
+            <div class="subtitle">کارت شناسایی تردد</div>
+        </div>
+        
+        <div class="card-body">
+            <!-- بخش عکس -->
+            <div class="photo-section">
+                {% if vehicle.photo_path %}
+                <img src="{{ url_for('uploaded_file', filename=vehicle.photo_path.split('/')[-1], _external=True) }}" 
+                     alt="عکس"
+                     class="photo">
+                {% else %}
+                <div class="photo-placeholder">👤</div>
+                {% endif %}
+                
+                <div class="mini-plate">
+                    {{ vehicle.plate_1 }} {{ vehicle.plate_2 }} {{ vehicle.plate_3 }} | {{ vehicle.plate_4 }}
+                </div>
+            </div>
+            
+            <!-- بخش اطلاعات -->
+            <div class="info-section">
+                <div class="driver-name">{{ vehicle.driver_name }}</div>
+                
+                <div class="info-grid">
+                    {% if vehicle.national_id %}
+                    <div class="info-item">
+                        <span class="info-label">کدملی:</span>
+                        <span class="info-value">{{ vehicle.national_id }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="info-item">
+                        <span class="info-label">نوع:</span>
+                        <span class="info-value">{{ vehicle.vehicle_type }}</span>
+                    </div>
+                    
+                    <div class="info-item">
+                        <span class="info-label">رنگ:</span>
+                        <span class="info-value">{{ vehicle.color }}</span>
+                    </div>
+                    
+                    {% if vehicle.position %}
+                    <div class="info-item">
+                        <span class="info-label">سمت:</span>
+                        <span class="info-value small">{{ vehicle.position }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if vehicle.student_id %}
+                    <div class="info-item">
+                        <span class="info-label">ش.دانش:</span>
+                        <span class="info-value">{{ vehicle.student_id }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if vehicle.major %}
+                    <div class="info-item">
+                        <span class="info-label">رشته:</span>
+                        <span class="info-value small">{{ vehicle.major }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if vehicle.parking %}
+                    <div class="info-item">
+                        <span class="info-label">پارکینگ:</span>
+                        <span class="info-value">{{ vehicle.parking }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if vehicle.dormitory_status %}
+                    <div class="info-item">
+                        <span class="info-label">خوابگاه:</span>
+                        <span class="info-value small">{{ vehicle.dormitory_status }}</span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if vehicle.entrance_gate %}
+                    <div class="info-item full-width">
+                        <span class="info-label">درب ورود:</span>
+                        <span class="info-value">{{ vehicle.entrance_gate }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="card-footer">
+                    <div class="validity">
+                        <span class="info-label">اعتبار تا:</span>
+                        <strong>{{ vehicle.get_shamsi_validity() }}</strong>
+                    </div>
+                    {% if vehicle.is_expired() %}
+                    <div class="status-badge expired">منقضی</div>
+                    {% else %}
+                    <div class="status-badge active">مجاز</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="watermark">AMIN INFO SYSTEM</div>
+    </div>
+    
+    <script>
+        // باز شدن خودکار پنجره چاپ
+        window.onload = function() {
+            // می‌توانید این خط را فعال کنید تا به محض باز شدن صفحه، پنجره چاپ باز شود
+            // window.print();
+        };
+    </script>
+</body>
+</html>
