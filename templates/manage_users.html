@@ -1,113 +1,124 @@
 {% extends "base.html" %}
-
 {% block title %}مدیریت کاربران{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">افزودن کاربر جدید</div>
-            <div class="card-body">
-                <form method="POST">
-                    <input type="hidden" name="action" value="add">
-                    <div class="mb-2">
-                        <input type="text" name="username" class="form-control" placeholder="نام کاربری" required>
-                    </div>
-                    <div class="mb-2">
-                        <input type="text" name="first_name" class="form-control" placeholder="نام" required>
-                    </div>
-                    <div class="mb-2">
-                        <input type="text" name="last_name" class="form-control" placeholder="نام خانوادگی" required>
-                    </div>
-                    <div class="mb-2">
-                        <input type="password" name="password" class="form-control" placeholder="رمز عبور" required>
-                    </div>
-                    <div class="form-check mb-2">
-                        <input class="form-check-input" type="checkbox" name="is_admin" id="is_admin">
-                        <label class="form-check-label" for="is_admin">مدیر سیستم</label>
-                    </div>
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" name="can_add_notification" id="can_add">
-                        <label class="form-check-label" for="can_add">دسترسی درج اطلاعیه جدید</label>
-                    </div>
-                    <button type="submit" class="btn btn-success w-100">افزودن</button>
-                </form>
-            </div>
+<h1 class="page-title">مدیریت کاربران</h1>
+
+<!-- فرم افزودن کاربر جدید -->
+<div class="notification-card" style="margin-bottom: 20px;">
+    <h3 style="margin-bottom: 15px; color: #2c3e50; border-bottom: 2px solid #28a745; padding-bottom: 8px;">
+        ➕ افزودن کاربر جدید
+    </h3>
+    <form method="POST" action="{{ url_for('manage_users') }}">
+        <input type="hidden" name="action" value="add">
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+            <input type="text" name="first_name" placeholder="نام" required
+                   style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
+            <input type="text" name="last_name" placeholder="نام خانوادگی" required
+                   style="padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-family: Tahoma;">
         </div>
-    </div>
-    
-    <div class="col-md-8">
-        <div class="card shadow-sm">
-            <div class="card-header">لیست کاربران</div>
-            <div class="card-body">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>نام و نام خانوادگی</th>
-                            <th>نقش</th>
-                            <th>دسترسی‌ها</th>
-                            <th>عملیات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
-                        <tr>
-                            <td>
-                                {{ user.first_name or '-' }} {{ user.last_name or '' }}
-                                <br><small class="text-muted">{{ user.username }}</small>
-                            </td>
-                            <td>
-                                {% if user.is_admin %}
-                                <span class="badge bg-warning text-dark">مدیر</span>
-                                {% else %}
-                                <span class="badge bg-secondary">کاربر</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <form method="POST" class="d-inline">
-                                    <input type="hidden" name="action" value="update">
-                                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                                    <div class="mb-1">
-                                        <input type="text" name="first_name" value="{{ user.first_name or '' }}" 
-                                               class="form-control form-control-sm d-inline-block" style="width: 80px;" placeholder="نام">
-                                        <input type="text" name="last_name" value="{{ user.last_name or '' }}" 
-                                               class="form-control form-control-sm d-inline-block" style="width: 80px;" placeholder="نام خانوادگی">
-                                    </div>
-                                    <div class="mb-1">
-                                        <input type="password" name="new_password" 
-                                               class="form-control form-control-sm d-inline-block" style="width: 120px;" placeholder="رمز جدید">
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="is_admin" 
-                                               {% if user.is_admin %}checked{% endif %}>
-                                        <small>مدیر</small>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="can_add_notification" 
-                                               {% if user.can_add_notification %}checked{% endif %}>
-                                        <small>درج اطلاعیه</small>
-                                    </div>
-                                    <button type="submit" class="btn btn-sm btn-outline-primary mt-1">ذخیره</button>
-                                </form>
-                            </td>
-                            <td>
-                                {% if user.id != current_user.id %}
-                                <form method="POST" class="d-inline">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="user_id" value="{{ user.id }}">
-                                    <button type="submit" class="btn btn-sm btn-danger" 
-                                            onclick="return confirm('آیا از حذف این کاربر اطمینان دارید؟')">حذف</button>
-                                </form>
-                                {% else %}
-                                <small class="text-muted">(کاربر فعلی)</small>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+        
+        <input type="text" name="username" placeholder="نام کاربری" required
+               style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-family: Tahoma; margin-bottom: 12px;">
+        
+        <input type="password" name="password" placeholder="رمز عبور" required
+               style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-family: Tahoma; margin-bottom: 12px;">
+        
+        <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
+                <input type="checkbox" name="is_admin" style="width: 18px; height: 18px;">
+                مدیر سیستم
+            </label>
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px;">
+                <input type="checkbox" name="can_add_notification" style="width: 18px; height: 18px;">
+                دسترسی درج اطلاعیه جدید
+            </label>
         </div>
-    </div>
+        
+        <button type="submit" 
+                style="width: 100%; background: #28a745; color: white; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; font-family: Tahoma;">
+            افزودن کاربر
+        </button>
+    </form>
 </div>
+
+<!-- لیست کاربران -->
+<h3 style="margin-bottom: 15px; color: #2c3e50; font-size: 16px;">
+    👥 لیست کاربران ({{ users|length }})
+</h3>
+
+{% for user in users %}
+    <div class="notification-card" style="margin-bottom: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 10px;">
+            <div style="flex: 1; min-width: 200px;">
+                <div style="font-weight: bold; font-size: 16px; color: #2c3e50; margin-bottom: 4px;">
+                    {{ user.first_name or '-' }} {{ user.last_name or '' }}
+                </div>
+                <div style="font-size: 13px; color: #888;">
+                    @{{ user.username }}
+                </div>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                {% if user.is_admin %}
+                    <span class="badge-important" style="background: #f39c12;">مدیر</span>
+                {% else %}
+                    <span style="background: #3498db; color: white; padding: 4px 12px; border-radius: 10px; font-size: 12px; font-weight: bold;">کاربر</span>
+                {% endif %}
+                
+                {% if user.can_add_notification %}
+                    <span style="background: #e3f2fd; color: #0d47a1; padding: 4px 10px; border-radius: 8px; font-size: 12px;">
+                        درج اطلاعیه
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- فرم ویرایش -->
+        <form method="POST" action="{{ url_for('manage_users') }}" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0f0f0;">
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                <input type="text" name="first_name" value="{{ user.first_name or '' }}" placeholder="نام"
+                       style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; font-family: Tahoma;">
+                <input type="text" name="last_name" value="{{ user.last_name or '' }}" placeholder="نام خانوادگی"
+                       style="padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; font-family: Tahoma;">
+            </div>
+            
+            <input type="password" name="new_password" placeholder="رمز عبور جدید (خالی بگذارید اگر تغییر نمی‌دهید)"
+                   style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; font-family: Tahoma; margin-bottom: 10px;">
+            
+            <div style="display: flex; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" name="is_admin" {{ 'checked' if user.is_admin }} style="width: 16px; height: 16px;">
+                    مدیر
+                </label>
+                <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px;">
+                    <input type="checkbox" name="can_add_notification" {{ 'checked' if user.can_add_notification }} style="width: 16px; height: 16px;">
+                    درج اطلاعیه
+                </label>
+            </div>
+            
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="submit" 
+                        style="flex: 1; min-width: 100px; background: #3498db; color: white; padding: 10px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-family: Tahoma;">
+                    ذخیره
+                </button>
+                
+                {% if user.id != current_user.id %}
+                    <button type="submit" name="action" value="delete"
+                            style="flex: 1; min-width: 100px; background: #e74c3c; color: white; padding: 10px; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; font-family: Tahoma;"
+                            onclick="return confirm('آیا از حذف این کاربر مطمئن هستید؟')">
+                        حذف
+                    </button>
+                {% else %}
+                    <span style="flex: 1; min-width: 100px; background: #f0f0f0; color: #888; padding: 10px; border-radius: 8px; font-size: 14px; text-align: center; display: block;">
+                        (کاربر فعلی)
+                    </span>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+{% endfor %}
 {% endblock %}
