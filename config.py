@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 # مسیر پایه پروژه
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -6,7 +7,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'flask-notification-secret-key-2026'
     
-    # مسیر دیتابیس (پشتیبانی همزمان از Neon و SQLite لوکال)
+    # مسیر دیتابیس - پشتیبانی همزمان از Neon و SQLite
     db_url = os.environ.get('DATABASE_URL')
     if db_url:
         if db_url.startswith('postgres://'):
@@ -17,7 +18,7 @@ class Config:
     
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
-    # تنظیمات حیاتی برای جلوگیری از قطع اتصال در دیتابیس‌های Serverless مثل Neon
+    # تنظیمات حیاتی برای Neon
     SQLALCHEMY_ENGINE_OPTIONS = {
         "pool_pre_ping": True,
         "pool_recycle": 300,
@@ -25,4 +26,11 @@ class Config:
     
     # ========== تنظیمات آپلود فایل ==========
     UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads', 'vehicles')
-    MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # حداکثر حجم آپلود ۲ مگابایت
+    MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # حداکثر ۲ مگابایت
+    
+    # تنظیمات Session
+    SESSION_PERMANENT = False
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SECURE = True
