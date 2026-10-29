@@ -330,7 +330,7 @@
             color: #0d47a1;
         }
         
-        /* کادر نارنجی برای توضیحات - ارتفاع کم‌شده */
+        /* کادر نارنجی برای توضیحات */
         .description-box {
             margin: 3px 8px 0 8px;
             background: #fff3cd;
@@ -360,34 +360,39 @@
             text-overflow: ellipsis;
         }
         
-        /* مسئول حفاظت فیزیکی - حالا بالاتر */
-        .security-official {
-            padding: 2px 8px 1px 8px;
+        /* ردیف پایین: خوابگاه (راست) + مسئول (چپ) */
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2px 8px 3px 8px;
             font-size: 8px;
+            margin-top: auto;
+        }
+        
+        /* خوابگاه - سمت راست */
+        .dormitory-info {
+            color: #555;
+            font-size: 8px;
+        }
+        
+        .dormitory-info strong {
+            color: #1e1e2e;
+        }
+        
+        /* مسئول حفاظت فیزیکی - سمت چپ */
+        .security-official {
             color: #1e1e2e;
             font-weight: bold;
+            font-size: 8px;
             display: flex;
             align-items: center;
             gap: 5px;
         }
         
         .security-official .line {
-            flex: 1;
+            width: 50px;
             border-top: 1px solid #1e1e2e;
-            max-width: 60px;
-        }
-        
-        /* اطلاعات خوابگاه - حالا پایین‌تر */
-        .bottom-info {
-            padding: 1px 8px 3px 8px;
-            font-size: 8px;
-            color: #555;
-            display: flex;
-            justify-content: flex-end;
-        }
-        
-        .bottom-info strong {
-            color: #1e1e2e;
         }
         
         /* واترمارک */
@@ -438,7 +443,7 @@
 </head>
 <body>
     <div class="print-controls">
-        <button onclick="window.print()">🖨️ چاپ کارت</button>
+        <button onclick="window.print()">️ چاپ کارت</button>
         <button onclick="window.close()">بستن</button>
     </div>
     
@@ -540,26 +545,31 @@
             
         </div>
         
-        <!-- کادر نارنجی برای توضیحات - ارتفاع کم‌شده -->
+        <!-- کادر نارنجی برای توضیحات -->
         {% if vehicle.description %}
         <div class="description-box">
-            <div class="desc-title">📝 توضیحات:</div>
+            <div class="desc-title"> توضیحات:</div>
             <div class="desc-text">{{ vehicle.description[:100] }}{% if vehicle.description|length > 100 %}...{% endif %}</div>
         </div>
         {% endif %}
         
-        <!-- مسئول حفاظت فیزیکی - حالا بالاتر (جای خوابگاه) -->
-        <div class="security-official">
-            مسئول حفاظت فیزیکی
-            <span class="line"></span>
+        <!-- ردیف پایین: خوابگاه (راست) + مسئول (چپ) -->
+        <div class="bottom-row">
+            <!-- خوابگاه - سمت راست -->
+            {% if vehicle.dormitory_status %}
+            <div class="dormitory-info">
+                خوابگاه: <strong>{{ vehicle.dormitory_status }}</strong>
+            </div>
+            {% else %}
+            <div></div>
+            {% endif %}
+            
+            <!-- مسئول حفاظت فیزیکی - سمت چپ -->
+            <div class="security-official">
+                مسئول حفاظت فیزیکی
+                <span class="line"></span>
+            </div>
         </div>
-        
-        <!-- اطلاعات خوابگاه - حالا پایین‌تر (جای مسئول) -->
-        {% if vehicle.dormitory_status %}
-        <div class="bottom-info">
-            <span>خوابگاه: <strong>{{ vehicle.dormitory_status }}</strong></span>
-        </div>
-        {% endif %}
     </div>
     
     <script>
