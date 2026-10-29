@@ -330,17 +330,18 @@
             color: #0d47a1;
         }
         
-        /* کادر نارنجی برای توضیحات - عرض کامل */
+        /* کادر نارنجی برای توضیحات - ارتفاع کم‌شده */
         .description-box {
-            margin: 4px 8px 0 8px;
+            margin: 3px 8px 0 8px;
             background: #fff3cd;
             border: 1.5px solid #f39c12;
             border-radius: 5px;
-            padding: 3px 6px;
+            padding: 2px 6px;
             font-size: 8px;
-            line-height: 1.4;
+            line-height: 1.3;
             color: #333;
-            min-height: 1.2cm;
+            min-height: 0.8cm;
+            max-height: 0.9cm;
             display: flex;
             flex-direction: column;
         }
@@ -355,24 +356,13 @@
         .desc-text {
             flex: 1;
             overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
         
-        /* اطلاعات پایین (خوابگاه) */
-        .bottom-info {
-            padding: 2px 8px;
-            font-size: 8px;
-            color: #555;
-            display: flex;
-            justify-content: flex-end;
-        }
-        
-        .bottom-info strong {
-            color: #1e1e2e;
-        }
-        
-        /* مسئول حفاظت فیزیکی */
+        /* مسئول حفاظت فیزیکی - حالا بالاتر */
         .security-official {
-            padding: 2px 8px 4px 8px;
+            padding: 2px 8px 1px 8px;
             font-size: 8px;
             color: #1e1e2e;
             font-weight: bold;
@@ -385,6 +375,19 @@
             flex: 1;
             border-top: 1px solid #1e1e2e;
             max-width: 60px;
+        }
+        
+        /* اطلاعات خوابگاه - حالا پایین‌تر */
+        .bottom-info {
+            padding: 1px 8px 3px 8px;
+            font-size: 8px;
+            color: #555;
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .bottom-info strong {
+            color: #1e1e2e;
         }
         
         /* واترمارک */
@@ -537,26 +540,26 @@
             
         </div>
         
-        <!-- کادر نارنجی برای توضیحات - عرض کامل -->
+        <!-- کادر نارنجی برای توضیحات - ارتفاع کم‌شده -->
         {% if vehicle.description %}
         <div class="description-box">
             <div class="desc-title">📝 توضیحات:</div>
-            <div class="desc-text">{{ vehicle.description[:120] }}{% if vehicle.description|length > 120 %}...{% endif %}</div>
+            <div class="desc-text">{{ vehicle.description[:100] }}{% if vehicle.description|length > 100 %}...{% endif %}</div>
         </div>
         {% endif %}
         
-        <!-- اطلاعات پایین (خوابگاه) -->
+        <!-- مسئول حفاظت فیزیکی - حالا بالاتر (جای خوابگاه) -->
+        <div class="security-official">
+            مسئول حفاظت فیزیکی
+            <span class="line"></span>
+        </div>
+        
+        <!-- اطلاعات خوابگاه - حالا پایین‌تر (جای مسئول) -->
         {% if vehicle.dormitory_status %}
         <div class="bottom-info">
             <span>خوابگاه: <strong>{{ vehicle.dormitory_status }}</strong></span>
         </div>
         {% endif %}
-        
-        <!-- مسئول حفاظت فیزیکی -->
-        <div class="security-official">
-            مسئول حفاظت فیزیکی
-            <span class="line"></span>
-        </div>
     </div>
     
     <script>
